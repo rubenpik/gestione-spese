@@ -65,7 +65,7 @@ input[type="number"] {
     <header class="topbar">
       <div>
         <p class="eyebrow">IL MIO BILANCIO</p>
-        <h1>Gestione Spese <span class="version-badge">v2.0.1</span></h1>
+        <h1>Gestione Spese <span class="version-badge">v2.0.2</span></h1>
       </div>
       <button id="themeBtn" class="icon-btn" aria-label="Cambia tema">☾</button>
     </header>
@@ -164,7 +164,7 @@ input[type="number"] {
         <article class="panel goal-fund">
           <p class="eyebrow">FONDO OBIETTIVI</p>
           <h2 id="goalFundAmount">€ 0,00</h2>
-          <p>Il salvadanaio alimentato dal risparmio oltre il tuo obiettivo mensile.</p>
+          <p>Il salvadanaio del tuo risparmio extra.</p>
         </article>
         <button id="addGoalBtn" class="primary-btn" type="button">＋ Nuovo obiettivo</button>
         <div id="goalList"></div>
@@ -589,7 +589,7 @@ function renderGoals(){
       <div class="goal-actions">
         <button class="secondary-btn" type="button" onclick="editGoal('${goal.id}')">Modifica</button>
         ${goal.percent>=100?`<button class="primary-btn" type="button" onclick="purchaseGoal('${goal.id}')">✓ Acquistato</button>`:''}
-        <button class="mini-btn" type="button" onclick="deleteGoal('${goal.id}')">×</button>
+        <button class="danger-btn" type="button" onclick="deleteGoal('${goal.id}')">Cancella</button>
       </div>
     </article>`).join(''):'<div class="empty">Nessun obiettivo. Aggiungi il primo traguardo che vuoi raggiungere.</div>';
   const history=Object.values(data.monthlyHistory||{}).sort((a,b)=>b.month.localeCompare(a.month));
@@ -628,7 +628,14 @@ window.editRecurring=id=>{const r=data.recurring.find(x=>x.id===id);if(!r)return
 function setGoalPriority(priority){$('#goalPriority').value=String(priority);$$('.priority-option').forEach(button=>button.classList.toggle('active',Number(button.dataset.priority)===Number(priority)))}
 function openGoal(goal=null){$('#goalForm').reset();$('#goalId').value=goal?.id||'';$('#goalName').value=goal?.name||'';$('#goalAmount').value=goal?.amount||'';setGoalPriority(goal?.priority||1);$('#goalModalTitle').textContent=goal?'Modifica obiettivo':'Nuovo obiettivo';$('#goalDialog').showModal();setTimeout(()=>$('#goalName').focus(),100)}
 window.editGoal=id=>openGoal(data.goals.find(goal=>goal.id===id));
-window.deleteGoal=id=>{if(confirm('Eliminare questo obiettivo?')){data.goals=data.goals.filter(goal=>goal.id!==id);save()}};
+window.deleteGoal=id=>{
+  const goal=data.goals.find(item=>item.id===id);
+  if(!goal)return;
+  if(confirm(`Vuoi davvero eliminare l’obiettivo "${goal.name}"?`)){
+    data.goals=data.goals.filter(item=>item.id!==id);
+    save();
+  }
+};
 window.purchaseGoal=id=>{const allocation=goalAllocations().find(goal=>goal.id===id);if(!allocation||allocation.percent<100)return;if(!confirm(`Segnare "${allocation.name}" come acquistato? Dal Fondo Obiettivi verranno scalati ${eur(allocation.amount)}.`))return;data.goalFund=Math.max(0,Number(data.goalFund)-Number(allocation.amount));data.goals=data.goals.filter(goal=>goal.id!==id);data.purchasedGoals.push({...allocation,purchasedAt:new Date().toISOString()});save()};
 function switchMovementTab(name){$$('.movement-tab').forEach(button=>button.classList.toggle('active',button.dataset.movementTab===name));$('#movementPane').classList.toggle('active',name==='list');$('#recurringPane').classList.toggle('active',name==='recurring')}
 function switchView(name){$$('.view').forEach(v=>v.classList.remove('active'));$(`#${name}View`).classList.add('active');$$('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view===name));$('#fab').hidden=!['home','movements'].includes(name);window.scrollTo({top:0,behavior:'smooth'})}
@@ -674,7 +681,7 @@ $('#settingsForm').onsubmit=e=>{e.preventDefault();const budget=Number($('#budge
 $('#analysisPeriod').onchange=renderAnalysis;$('#searchInput').oninput=renderMovements;$('#typeFilter').onchange=renderMovements;$('#prevMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderAll()};$('#nextMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderAll()};$('#themeBtn').onclick=()=>{data.settings.theme=data.settings.theme==='dark'?'light':'dark';save()};
 $('#exportBtn').onclick=()=>{
   const now=new Date(), stamp=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-  const backup={app:'Gestione Spese',version:'2.0.1',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
+  const backup={app:'Gestione Spese',version:'2.0.2',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),a=document.createElement('a'),url=URL.createObjectURL(blob);
   a.href=url;a.download=`gestione-spese-backup-${stamp}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
