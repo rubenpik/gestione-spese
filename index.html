@@ -65,7 +65,7 @@ input[type="number"] {
     <header class="topbar">
       <div>
         <p class="eyebrow">IL MIO BILANCIO</p>
-        <h1>Gestione Spese <span class="version-badge">v2.0.2</span></h1>
+        <h1>Gestione Spese <span class="version-badge">v2.0.3</span></h1>
       </div>
       <button id="themeBtn" class="icon-btn" aria-label="Cambia tema">☾</button>
     </header>
@@ -274,9 +274,9 @@ input[type="number"] {
       <label>Priorità
         <input id="goalPriority" type="hidden" value="1" />
         <span class="priority-picker">
-          <button class="priority-option active" type="button" data-priority="1">1</button>
-          <button class="priority-option" type="button" data-priority="2">2</button>
-          <button class="priority-option" type="button" data-priority="3">3</button>
+          <button class="priority-option active" type="button" data-priority="1">Alta</button>
+          <button class="priority-option" type="button" data-priority="2">Media</button>
+          <button class="priority-option" type="button" data-priority="3">Bassa</button>
         </span>
       </label>
       <button class="primary-btn" type="submit">Salva obiettivo</button>
@@ -583,7 +583,7 @@ function renderGoals(){
   const allocations=goalAllocations();
   $('#goalList').innerHTML=allocations.length?allocations.map(goal=>`
     <article class="goal-card">
-      <div class="goal-head"><div><h3>${escapeHtml(goal.name)}</h3><strong>${eur(goal.amount)}</strong></div><span class="priority-badge">Priorità ${goal.priority}</span></div>
+      <div class="goal-head"><div><h3>${escapeHtml(goal.name)}</h3><strong>${eur(goal.amount)}</strong></div><span class="priority-badge">Priorità ${priorityLabel(goal.priority)}</span></div>
       <div class="progress-track"><div class="progress-bar" style="width:${goal.percent}%"></div></div>
       <div class="progress-meta"><span>${eur(goal.allocated)} / ${eur(goal.amount)}</span><strong>${Math.round(goal.percent)}%</strong></div>
       <div class="goal-actions">
@@ -597,6 +597,7 @@ function renderGoals(){
   $('#purchasedGoals').innerHTML=(data.purchasedGoals||[]).length?[...data.purchasedGoals].sort((a,b)=>b.purchasedAt.localeCompare(a.purchasedAt)).map(goal=>`<div class="history-row"><div><strong>✓ ${escapeHtml(goal.name)}</strong><br><small>Acquistato il ${new Date(goal.purchasedAt).toLocaleDateString('it-IT')}</small></div><div class="history-value">${eur(goal.amount)}</div></div>`).join(''):'<div class="empty">Nessun obiettivo acquistato.</div>';
 }
 function escapeHtml(value){return String(value||'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]))}
+function priorityLabel(priority){return ({1:'Alta',2:'Media',3:'Bassa'})[Number(priority)]||'Bassa'}
 function formatMonthKey(key){const [year,month]=key.split('-').map(Number);return new Date(year,month-1,1).toLocaleDateString('it-IT',{month:'long',year:'numeric'})}
 function analysisMovements(){
   const period=$('#analysisPeriod')?.value||'all', now=new Date(), startOfCurrentYear=`${now.getFullYear()}-01-01`;
@@ -681,7 +682,7 @@ $('#settingsForm').onsubmit=e=>{e.preventDefault();const budget=Number($('#budge
 $('#analysisPeriod').onchange=renderAnalysis;$('#searchInput').oninput=renderMovements;$('#typeFilter').onchange=renderMovements;$('#prevMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderAll()};$('#nextMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderAll()};$('#themeBtn').onclick=()=>{data.settings.theme=data.settings.theme==='dark'?'light':'dark';save()};
 $('#exportBtn').onclick=()=>{
   const now=new Date(), stamp=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-  const backup={app:'Gestione Spese',version:'2.0.2',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
+  const backup={app:'Gestione Spese',version:'2.0.3',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),a=document.createElement('a'),url=URL.createObjectURL(blob);
   a.href=url;a.download=`gestione-spese-backup-${stamp}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
