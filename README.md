@@ -4,11 +4,12 @@ PWA personale, ottimizzata per iPhone, per registrare entrate e uscite, controll
 
 ## Versione
 
-**v2.0.3**
+**v2.0.4**
 
 ## Funzioni principali
 
 - Home con disponibilità mensile e spesa giornaliera consigliata
+- Disponibilità aumentata automaticamente quando le entrate superano il budget impostato
 - Movimenti e spese fisse nella stessa sezione
 - Categorie essenziali per spese ed entrate
 - Analisi mensili e di lungo periodo

@@ -65,7 +65,7 @@ input[type="number"] {
     <header class="topbar">
       <div>
         <p class="eyebrow">IL MIO BILANCIO</p>
-        <h1>Gestione Spese <span class="version-badge">v2.0.3</span></h1>
+        <h1>Gestione Spese <span class="version-badge">v2.0.4</span></h1>
       </div>
       <button id="themeBtn" class="icon-btn" aria-label="Cambia tema">☾</button>
     </header>
@@ -432,11 +432,12 @@ function closeCompletedMonths(){
     const income=list.filter(m=>m.type==='income').reduce((sum,m)=>sum+Number(m.amount||0),0);
     const expense=list.filter(m=>m.type==='expense').reduce((sum,m)=>sum+Number(m.amount||0),0);
     const budget=Number(data.settings.budget)||0,savingGoal=Number(data.settings.savingGoal)||0;
-    const extra=budget>0?budget-savingGoal-expense:0;
+    const monthlyBudget=effectiveMonthlyBudget(budget,income);
+    const extra=monthlyBudget>0?monthlyBudget-savingGoal-expense:0;
     const before=Math.max(0,Number(data.goalFund)||0);
     const applied=extra<0?-Math.min(before,Math.abs(extra)):extra;
     data.goalFund=Math.max(0,before+applied);
-    data.monthlyHistory[key]={month:key,income,expense,budget,savingGoal,protectedSaving:Math.max(0,budget-expense),extra,applied,fundAfter:data.goalFund,closedAt:new Date().toISOString()};
+    data.monthlyHistory[key]={month:key,income,expense,budget,effectiveBudget:monthlyBudget,savingGoal,protectedSaving:Math.max(0,monthlyBudget-expense),extra,applied,fundAfter:data.goalFund,closedAt:new Date().toISOString()};
   });
 }
 function activeGoals(){
@@ -488,6 +489,7 @@ function remainingDays(){const now=new Date();if(ym(now)!==ym(currentMonth)) ret
 function categoryIcon(name,type='expense'){return (CATEGORIES[type].find(c=>c[0]===name)||['','•'])[1]}
 function pendingRecurringAmount(){return 0}
 function totals(){const ms=monthMovements();return {income:ms.filter(m=>m.type==='income').reduce((s,m)=>s+Number(m.amount),0),expense:ms.filter(m=>m.type==='expense').reduce((s,m)=>s+Number(m.amount),0)}}
+function effectiveMonthlyBudget(budget,income){return Math.max(Number(budget)||0,Number(income)||0)}
 
 function groupByCategory(list,type='expense'){
   const totalsMap=new Map();
@@ -532,7 +534,7 @@ function renderHome(){
   if(!configured){
     $('#realAvailable').textContent='—';$('#totalIncome').textContent=eur(t.income);$('#totalExpense').textContent=eur(t.expense);$('#pendingRecurring').textContent=eur(goal);$('#dailySpend').textContent='—';$('#daysLeft').textContent='Imposta il budget per iniziare';$('#budgetBar').style.width='0%';$('#heroBudgetBar').style.width='0%';$('#heroBudgetPercent').textContent='0%';$('#budgetUsed').textContent=eur(t.expense)+' usati';$('#budgetLimit').textContent='Budget non configurato';renderCategoryChart('#categoryChart');renderMovementList('#recentList',monthMovements().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5));return;
   }
-  const spendable=Math.max(0,budget-goal),spendableAvailable=Math.max(0,spendable-t.expense),rawPct=spendable?t.expense/spendable*100:(t.expense>0?100:0),pct=Math.min(100,rawPct);
+  const monthlyBudget=effectiveMonthlyBudget(budget,t.income),spendable=Math.max(0,monthlyBudget-goal),spendableAvailable=Math.max(0,spendable-t.expense),rawPct=spendable?t.expense/spendable*100:(t.expense>0?100:0),pct=Math.min(100,rawPct);
   $('#realAvailable').textContent=eur(spendableAvailable);$('#totalIncome').textContent=eur(t.income);$('#totalExpense').textContent=eur(t.expense);$('#pendingRecurring').textContent=eur(goal);$('#dailySpend').textContent=eur(spendableAvailable/remainingDays());$('#daysLeft').textContent=`${remainingDays()} giorni rimanenti`;$('#budgetBar').style.width=`${pct}%`;$('#heroBudgetBar').style.width=`${pct}%`;$('#heroBudgetPercent').textContent=`${Math.round(rawPct)}%`;$('#heroBudgetBar').style.background=rawPct>=100?'#fecaca':rawPct>=80?'#fde68a':'#fff';$('#budgetBar').style.background=rawPct>=100?'var(--danger)':rawPct>=80?'var(--warning)':'var(--primary2)';$('#budgetUsed').textContent=`${eur(t.expense)} usati`;$('#budgetLimit').textContent=rawPct>=100?`Soldi spendibili finiti · limite ${eur(spendable)}`:`${eur(spendableAvailable)} rimasti su ${eur(spendable)}`;renderCategoryChart('#categoryChart');renderMovementList('#recentList',monthMovements().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5));renderHomeGoal()
 }
 function renderHomeGoal(){
@@ -682,7 +684,7 @@ $('#settingsForm').onsubmit=e=>{e.preventDefault();const budget=Number($('#budge
 $('#analysisPeriod').onchange=renderAnalysis;$('#searchInput').oninput=renderMovements;$('#typeFilter').onchange=renderMovements;$('#prevMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderAll()};$('#nextMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderAll()};$('#themeBtn').onclick=()=>{data.settings.theme=data.settings.theme==='dark'?'light':'dark';save()};
 $('#exportBtn').onclick=()=>{
   const now=new Date(), stamp=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-  const backup={app:'Gestione Spese',version:'2.0.3',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
+  const backup={app:'Gestione Spese',version:'2.0.4',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),a=document.createElement('a'),url=URL.createObjectURL(blob);
   a.href=url;a.download=`gestione-spese-backup-${stamp}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
