@@ -58,7 +58,7 @@ input[type="number"] {
   .movement-simple { max-height: 86dvh; }
 }
 
-.movement-tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--border);border-radius:15px;padding:4px;margin-bottom:14px}.movement-tab{border:0;background:transparent;color:var(--muted);padding:11px;border-radius:12px;font-weight:800}.movement-tab.active{background:var(--card);color:var(--primary);box-shadow:0 3px 10px rgba(0,0,0,.06)}.movement-pane{display:none}.movement-pane.active{display:block}.goal-fund{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;text-align:center}.goal-fund .eyebrow{color:rgba(255,255,255,.72)}.goal-fund h2{font-size:2.35rem;margin:5px 0}.goal-fund p{margin:0;color:rgba(255,255,255,.78);font-size:.82rem}.goal-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:16px;margin:11px 0}.goal-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.goal-head h3{margin:0 0 4px}.priority-badge{background:var(--border);color:var(--muted);border-radius:999px;padding:5px 9px;font-size:.72rem;font-weight:800;white-space:nowrap}.goal-card .progress-track{margin-top:13px}.goal-card .progress-meta{font-size:.8rem}.goal-actions{display:flex;gap:8px;margin-top:12px}.goal-actions button{flex:1}.priority-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.priority-option{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:13px;padding:11px;font-weight:850}.priority-option.active{background:var(--primary);border-color:var(--primary);color:#fff}.history-row{display:grid;grid-template-columns:1fr auto;gap:6px;padding:12px 0;border-bottom:1px solid var(--border)}.history-row small{color:var(--muted)}.history-value{text-align:right;font-weight:850}.positive{color:var(--primary)}.negative{color:var(--danger)}.home-goal-panel{cursor:pointer}.home-goal-panel .progress-track{margin-top:12px}
+.movement-tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--border);border-radius:15px;padding:4px;margin-bottom:14px}.movement-tab{border:0;background:transparent;color:var(--muted);padding:11px;border-radius:12px;font-weight:800}.movement-tab.active{background:var(--card);color:var(--primary);box-shadow:0 3px 10px rgba(0,0,0,.06)}.movement-pane{display:none}.movement-pane.active{display:block}.goal-fund{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;text-align:center}.goal-fund .eyebrow{color:rgba(255,255,255,.72)}.goal-fund h2{font-size:2.35rem;margin:5px 0}.goal-fund p{margin:0;color:rgba(255,255,255,.78);font-size:.82rem}.goal-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:16px;margin:11px 0}.goal-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.goal-head h3{margin:0 0 4px}.priority-badge{background:var(--border);color:var(--muted);border-radius:999px;padding:5px 9px;font-size:.72rem;font-weight:800;white-space:nowrap}.goal-card .progress-track{margin-top:13px}.goal-card .progress-meta{font-size:.8rem}.goal-actions{display:flex;gap:8px;margin-top:12px}.goal-actions button{flex:1}.priority-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.priority-option{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:13px;padding:11px;font-weight:850}.priority-option.active{background:var(--primary);border-color:var(--primary);color:#fff}.history-row{display:grid;grid-template-columns:1fr auto;gap:6px;padding:12px 0;border-bottom:1px solid var(--border)}.history-row small{color:var(--muted)}.history-value{text-align:right;font-weight:850}.positive{color:var(--primary)}.negative{color:var(--danger)}.home-goal-panel{cursor:pointer}.home-goal-panel .progress-track{margin-top:12px}#movementsView{padding-bottom:80px}#movementsView .movement-list{padding-bottom:16px}
 </style>
 </head>
 <body>
@@ -66,7 +66,7 @@ input[type="number"] {
     <header class="topbar">
       <div>
         <p class="eyebrow">IL MIO BILANCIO</p>
-        <h1>Gestione Spese <span class="version-badge">v2.1.4</span></h1>
+        <h1>Gestione Spese <span class="version-badge">v2.1.5</span></h1>
       </div>
     </header>
 
@@ -795,7 +795,7 @@ $('#settingsForm').onsubmit=e=>{e.preventDefault();const openingBalance=Number($
 $('#analysisPeriod').onchange=renderAnalysis;$('#searchInput').oninput=renderMovements;$('#typeFilter').onchange=renderMovements;$('#prevMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderAll()};$('#nextMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderAll()};
 $('#exportBtn').onclick=()=>{
   const now=new Date(), stamp=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-  const backup={app:'Gestione Spese',version:'2.1.4',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
+  const backup={app:'Gestione Spese',version:'2.1.5',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),a=document.createElement('a'),url=URL.createObjectURL(blob);
   a.href=url;a.download=`gestione-spese-backup-${stamp}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
