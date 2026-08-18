@@ -4,7 +4,7 @@ PWA personale, ottimizzata per iPhone, per registrare entrate e uscite, controll
 
 ## Versione
 
-**v2.1.3**
+**v2.1.4**
 
 ## Funzioni principali
 
@@ -22,6 +22,7 @@ PWA personale, ottimizzata per iPhone, per registrare entrate e uscite, controll
 - Fondo Obiettivi alimentato soltanto dal risparmio extra
 - Riduzione del Fondo nei mesi in cui viene superata la disponibilità spendibile
 - Avanzamento automatico degli obiettivi
+- Avanzamento di ogni obiettivo confrontato con l’intero Fondo disponibile
 - Storico mensile bloccato alla chiusura di ogni mese
 - Backup e ripristino compatibili con i dati delle versioni precedenti
 - Tema chiaro/scuro selezionabile dalle Impostazioni e installazione PWA

@@ -66,7 +66,7 @@ input[type="number"] {
     <header class="topbar">
       <div>
         <p class="eyebrow">IL MIO BILANCIO</p>
-        <h1>Gestione Spese <span class="version-badge">v2.1.3</span></h1>
+        <h1>Gestione Spese <span class="version-badge">v2.1.4</span></h1>
       </div>
     </header>
 
@@ -517,10 +517,9 @@ function activeGoals(){
   return (data.goals||[]).filter(goal=>!goal.purchasedAt).sort((a,b)=>Number(a.priority)-Number(b.priority)||String(a.createdAt).localeCompare(String(b.createdAt)));
 }
 function goalAllocations(){
-  let available=Math.max(0,Number(data.goalFund)||0);
+  const available=Math.max(0,Number(data.goalFund)||0);
   return activeGoals().map(goal=>{
     const amount=Math.max(0,Number(goal.amount)||0),allocated=Math.min(available,amount);
-    available=Math.max(0,available-allocated);
     return {...goal,allocated,percent:amount?Math.min(100,allocated/amount*100):0};
   });
 }
@@ -796,7 +795,7 @@ $('#settingsForm').onsubmit=e=>{e.preventDefault();const openingBalance=Number($
 $('#analysisPeriod').onchange=renderAnalysis;$('#searchInput').oninput=renderMovements;$('#typeFilter').onchange=renderMovements;$('#prevMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderAll()};$('#nextMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderAll()};
 $('#exportBtn').onclick=()=>{
   const now=new Date(), stamp=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-  const backup={app:'Gestione Spese',version:'2.1.3',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
+  const backup={app:'Gestione Spese',version:'2.1.4',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),a=document.createElement('a'),url=URL.createObjectURL(blob);
   a.href=url;a.download=`gestione-spese-backup-${stamp}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
