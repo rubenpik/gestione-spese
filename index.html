@@ -66,7 +66,7 @@ input[type="number"] {
     <header class="topbar">
       <div>
         <p class="eyebrow">IL MIO BILANCIO</p>
-        <h1>Gestione Spese <span class="version-badge">v2.1.2</span></h1>
+        <h1>Gestione Spese <span class="version-badge">v2.1.3</span></h1>
       </div>
     </header>
 
@@ -333,7 +333,7 @@ const CATEGORIES={
   ]
 };
 const KEY='gestioneSpeseCleanV17';
-const DATA_SCHEMA_VERSION=6;
+const DATA_SCHEMA_VERSION=7;
 const defaultData={schemaVersion:DATA_SCHEMA_VERSION,settings:{budget:0,savingGoal:0,openingBalance:0,theme:'light',configured:false},movements:[],recurring:[],categoryMemory:{},goals:[],purchasedGoals:[],goalFund:0,monthlyHistory:{},goalTrackingStart:null};
 let data=load();let currentMonth=new Date();currentMonth.setDate(1);
 const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
@@ -453,6 +453,11 @@ function migrateData(){
     data.schemaVersion=6;
     changed=true;
   }
+  if(currentVersion<7){
+    rebuildGoalFundFromHistory();
+    data.schemaVersion=7;
+    changed=true;
+  }
   if(changed) saveDataOnly();
   return changed;
 }
@@ -462,6 +467,33 @@ function monthKeysBetween(start,endExclusive){
   const [year,month]=start.split('-').map(Number),cursor=new Date(year,month-1,1),keys=[];
   while(ym(cursor)<endExclusive){keys.push(ym(cursor));cursor.setMonth(cursor.getMonth()+1)}
   return keys;
+}
+function rebuildGoalFundFromHistory(){
+  data.monthlyHistory=data.monthlyHistory&&typeof data.monthlyHistory==='object'?data.monthlyHistory:{};
+  const events=[];
+  Object.keys(data.monthlyHistory).forEach(key=>{
+    const [year,month]=key.split('-').map(Number);
+    events.push({kind:'month',key,time:new Date(year,month,0,23,59,59,999).getTime()});
+  });
+  (data.purchasedGoals||[]).forEach(goal=>events.push({kind:'purchase',goal,time:new Date(goal.purchasedAt||0).getTime()||0}));
+  events.sort((a,b)=>a.time-b.time||(a.kind==='purchase'?-1:1));
+  let fund=0;
+  events.forEach(event=>{
+    if(event.kind==='purchase'){
+      fund=Math.max(0,fund-(Number(event.goal.amount)||0));
+      return;
+    }
+    const item=data.monthlyHistory[event.key],list=data.movements.filter(m=>String(m.date||'').startsWith(event.key));
+    const income=list.filter(m=>m.type==='income').reduce((sum,m)=>sum+Number(m.amount||0),0);
+    const expense=list.filter(m=>m.type==='expense').reduce((sum,m)=>sum+Number(m.amount||0),0);
+    const savingGoal=Number(item.savingGoal)||0,openingBalance=Number(item.openingBalance??item.budget)||0;
+    const resources=income>0?income:openingBalance;
+    const extra=resources>0?Math.round((resources-savingGoal-expense)*100)/100:0;
+    const applied=extra<0?-Math.min(fund,Math.abs(extra)):extra;
+    fund=Math.max(0,fund+applied);
+    Object.assign(item,{income,expense,openingBalance,effectiveResources:resources,extra,applied,fundAfter:fund});
+  });
+  data.goalFund=Math.round(fund*100)/100;
 }
 function closeCompletedMonths(){
   data.monthlyHistory=data.monthlyHistory||{};
@@ -474,7 +506,7 @@ function closeCompletedMonths(){
     const expense=list.filter(m=>m.type==='expense').reduce((sum,m)=>sum+Number(m.amount||0),0);
     const openingBalance=Number(data.settings.openingBalance)||0,savingGoal=Number(data.settings.savingGoal)||0;
     const monthlyResources=income>0?income:openingBalance;
-    const extra=monthlyResources>0?monthlyResources-savingGoal-expense:0;
+    const extra=monthlyResources>0?Math.round((monthlyResources-savingGoal-expense)*100)/100:0;
     const before=Math.max(0,Number(data.goalFund)||0);
     const applied=extra<0?-Math.min(before,Math.abs(extra)):extra;
     data.goalFund=Math.max(0,before+applied);
@@ -764,7 +796,7 @@ $('#settingsForm').onsubmit=e=>{e.preventDefault();const openingBalance=Number($
 $('#analysisPeriod').onchange=renderAnalysis;$('#searchInput').oninput=renderMovements;$('#typeFilter').onchange=renderMovements;$('#prevMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderAll()};$('#nextMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderAll()};
 $('#exportBtn').onclick=()=>{
   const now=new Date(), stamp=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-  const backup={app:'Gestione Spese',version:'2.1.2',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
+  const backup={app:'Gestione Spese',version:'2.1.3',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),a=document.createElement('a'),url=URL.createObjectURL(blob);
   a.href=url;a.download=`gestione-spese-backup-${stamp}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
