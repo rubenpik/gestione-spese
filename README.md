@@ -4,7 +4,7 @@ PWA personale, ottimizzata per iPhone, per registrare entrate e uscite, controll
 
 ## Versione
 
-**v2.1.1**
+**v2.1.2**
 
 ## Funzioni principali
 
@@ -13,7 +13,8 @@ PWA personale, ottimizzata per iPhone, per registrare entrate e uscite, controll
 - Movimenti e spese fisse nella stessa sezione, con passaggio diretto tra inserimento singolo e fisso
 - Spese fisse senza scadenza o con durata di 3, 6, 12 o un numero personalizzato di mesi
 - Entrate ricorrenti con categorie e descrizioni dedicate
-- Mesi conclusi mostrati usando il riepilogo storico congelato, senza ricalcoli retroattivi
+- Fondo Obiettivi e riepilogo mensile congelati alla chiusura, senza ricalcoli retroattivi
+- Disponibilità dei mesi conclusi verificata sulle entrate e sulle spese realmente registrate
 - Categorie essenziali per spese ed entrate
 - Analisi mensili e di lungo periodo
 - Obiettivi con priorità Alta, Media e Bassa
