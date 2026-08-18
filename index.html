@@ -58,7 +58,7 @@ input[type="number"] {
   .movement-simple { max-height: 86dvh; }
 }
 
-.movement-tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--border);border-radius:15px;padding:4px;margin-bottom:14px}.movement-tab{border:0;background:transparent;color:var(--muted);padding:11px;border-radius:12px;font-weight:800}.movement-tab.active{background:var(--card);color:var(--primary);box-shadow:0 3px 10px rgba(0,0,0,.06)}.movement-pane{display:none}.movement-pane.active{display:block}.goal-fund{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;text-align:center}.goal-fund .eyebrow{color:rgba(255,255,255,.72)}.goal-fund h2{font-size:2.35rem;margin:5px 0}.goal-fund p{margin:0;color:rgba(255,255,255,.78);font-size:.82rem}.goal-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:16px;margin:11px 0}.goal-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.goal-head h3{margin:0 0 4px}.priority-badge{background:var(--border);color:var(--muted);border-radius:999px;padding:5px 9px;font-size:.72rem;font-weight:800;white-space:nowrap}.goal-card .progress-track{margin-top:13px}.goal-card .progress-meta{font-size:.8rem}.goal-actions{display:flex;gap:8px;margin-top:12px}.goal-actions button{flex:1}.priority-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.priority-option{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:13px;padding:11px;font-weight:850}.priority-option.active{background:var(--primary);border-color:var(--primary);color:#fff}.history-row{display:grid;grid-template-columns:1fr auto;gap:6px;padding:12px 0;border-bottom:1px solid var(--border)}.history-row small{color:var(--muted)}.history-value{text-align:right;font-weight:850}.positive{color:var(--primary)}.negative{color:var(--danger)}.home-goal-panel{cursor:pointer}.home-goal-panel .progress-track{margin-top:12px}#movementsView{padding-bottom:80px}#movementsView .movement-list{padding-bottom:16px}
+.movement-tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--border);border-radius:15px;padding:4px;margin-bottom:14px}.movement-tab{border:0;background:transparent;color:var(--muted);padding:11px;border-radius:12px;font-weight:800}.movement-tab.active{background:var(--card);color:var(--primary);box-shadow:0 3px 10px rgba(0,0,0,.06)}.movement-pane{display:none}.movement-pane.active{display:block}.goal-fund{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;text-align:center}.goal-fund .eyebrow{color:rgba(255,255,255,.72)}.goal-fund h2{font-size:2.35rem;margin:5px 0}.goal-fund p{margin:0;color:rgba(255,255,255,.78);font-size:.82rem}.goal-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:16px;margin:11px 0}.goal-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.goal-head h3{margin:0 0 4px}.priority-badge{background:var(--border);color:var(--muted);border-radius:999px;padding:5px 9px;font-size:.72rem;font-weight:800;white-space:nowrap}.goal-card .progress-track{margin-top:13px}.goal-card .progress-meta{font-size:.8rem}.goal-actions{display:flex;gap:8px;margin-top:12px}.goal-actions button{flex:1}.priority-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.priority-option{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:13px;padding:11px;font-weight:850}.priority-option.active{background:var(--primary);border-color:var(--primary);color:#fff}.history-row{display:grid;grid-template-columns:1fr auto;gap:6px;padding:12px 0;border-bottom:1px solid var(--border)}.history-row small{color:var(--muted)}.history-value{text-align:right;font-weight:850}.positive{color:var(--primary)}.negative{color:var(--danger)}#homeView,#movementsView{padding-bottom:80px}#homeView .movement-list,#movementsView .movement-list{padding-bottom:16px}
 </style>
 </head>
 <body>
@@ -66,7 +66,7 @@ input[type="number"] {
     <header class="topbar">
       <div>
         <p class="eyebrow">IL MIO BILANCIO</p>
-        <h1>Gestione Spese <span class="version-badge">v2.1.5</span></h1>
+        <h1>Gestione Spese <span class="version-badge">v2.1.6</span></h1>
       </div>
     </header>
 
@@ -118,11 +118,6 @@ input[type="number"] {
         </article>
 
         <article class="panel">
-          <div class="panel-head"><div><p class="eyebrow">CATEGORIE</p><h3>Dove spendi di più</h3></div></div>
-          <div id="categoryChart" class="category-chart"></div>
-        </article>
-
-        <article class="panel">
           <div class="panel-head">
             <div><p class="eyebrow">ULTIMI MOVIMENTI</p><h3>Attività recente</h3></div>
             <button class="text-btn" data-view="movements">Vedi tutti</button>
@@ -130,11 +125,6 @@ input[type="number"] {
           <div id="recentList" class="movement-list"></div>
         </article>
 
-        <article id="homeGoalPanel" class="panel home-goal-panel" data-view="goals" hidden>
-          <div class="panel-head"><div><p class="eyebrow">PROSSIMO OBIETTIVO</p><h3 id="homeGoalName">—</h3></div><strong id="homeGoalPercent">0%</strong></div>
-          <div class="progress-track"><div id="homeGoalBar" class="progress-bar"></div></div>
-          <div class="progress-meta"><span id="homeGoalProgress">€ 0 / € 0</span><span id="homeGoalMissing">—</span></div>
-        </article>
       </section>
 
       <section id="movementsView" class="view">
@@ -615,7 +605,7 @@ function renderHome(){
   const configured=isPast?(Boolean(archived)||t.income>0||t.expense>0):(data.settings.configured===true && openingBalance>0);
   $('#homeView').classList.toggle('home-unconfigured',!configured);
   if(!configured){
-    $('#realAvailable').textContent='—';$('#totalIncome').textContent=eur(t.income);$('#totalExpense').textContent=eur(t.expense);$('#pendingRecurring').textContent=eur(goal);$('#dailySpendLabel').textContent='Oggi puoi ancora spendere';$('#dailySpend').textContent='—';$('#daysLeft').textContent='Imposta il saldo iniziale per iniziare';$('#budgetBar').style.width='0%';$('#heroBudgetBar').style.width='0%';$('#heroBudgetPercent').textContent='0%';$('#budgetUsed').textContent=eur(t.expense)+' usati';$('#budgetLimit').textContent='Saldo iniziale non configurato';renderCategoryChart('#categoryChart');renderMovementList('#recentList',monthMovements().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5));return;
+    $('#realAvailable').textContent='—';$('#totalIncome').textContent=eur(t.income);$('#totalExpense').textContent=eur(t.expense);$('#pendingRecurring').textContent=eur(goal);$('#dailySpendLabel').textContent='Oggi puoi ancora spendere';$('#dailySpend').textContent='—';$('#daysLeft').textContent='Imposta il saldo iniziale per iniziare';$('#budgetBar').style.width='0%';$('#heroBudgetBar').style.width='0%';$('#heroBudgetPercent').textContent='0%';$('#budgetUsed').textContent=eur(t.expense)+' usati';$('#budgetLimit').textContent='Saldo iniziale non configurato';renderMovementList('#recentList',monthMovements().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5));return;
   }
   if(isPast){
     const income=Number(t.income)||0,expense=Number(t.expense)||0,savingGoal=Number(archived?.savingGoal??goal)||0;
@@ -624,21 +614,11 @@ function renderHome(){
     const historicalOpening=Number(archived?.openingBalance??archived?.budget)||0;
     const resources=income>0?income:historicalOpening;
     const spendable=Math.max(0,resources-savingGoal),available=Math.max(0,spendable-expense),rawPct=spendable?expense/spendable*100:(expense>0?100:0),pct=Math.min(100,rawPct);
-    $('#realAvailable').textContent=eur(available);$('#totalIncome').textContent=eur(income);$('#totalExpense').textContent=eur(expense);$('#pendingRecurring').textContent=eur(savingGoal);$('#dailySpendLabel').textContent='Disponibilità a fine mese';$('#dailySpend').textContent=eur(available);$('#daysLeft').textContent='Mese concluso';$('#budgetBar').style.width=`${pct}%`;$('#heroBudgetBar').style.width=`${pct}%`;$('#heroBudgetPercent').textContent=`${Math.round(rawPct)}%`;$('#heroBudgetBar').style.background=rawPct>=100?'#fecaca':rawPct>=80?'#fde68a':'#fff';$('#budgetBar').style.background=rawPct>=100?'var(--danger)':rawPct>=80?'var(--warning)':'var(--primary2)';$('#budgetUsed').textContent=`${eur(expense)} usati`;$('#budgetLimit').textContent=rawPct>=100?`Soldi spendibili finiti · limite ${eur(spendable)}`:`${eur(available)} rimasti su ${eur(spendable)}`;renderCategoryChart('#categoryChart');renderMovementList('#recentList',monthMovements().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5));renderHomeGoal();return;
+    $('#realAvailable').textContent=eur(available);$('#totalIncome').textContent=eur(income);$('#totalExpense').textContent=eur(expense);$('#pendingRecurring').textContent=eur(savingGoal);$('#dailySpendLabel').textContent='Disponibilità a fine mese';$('#dailySpend').textContent=eur(available);$('#daysLeft').textContent='Mese concluso';$('#budgetBar').style.width=`${pct}%`;$('#heroBudgetBar').style.width=`${pct}%`;$('#heroBudgetPercent').textContent=`${Math.round(rawPct)}%`;$('#heroBudgetBar').style.background=rawPct>=100?'#fecaca':rawPct>=80?'#fde68a':'#fff';$('#budgetBar').style.background=rawPct>=100?'var(--danger)':rawPct>=80?'var(--warning)':'var(--primary2)';$('#budgetUsed').textContent=`${eur(expense)} usati`;$('#budgetLimit').textContent=rawPct>=100?`Soldi spendibili finiti · limite ${eur(spendable)}`:`${eur(available)} rimasti su ${eur(spendable)}`;renderMovementList('#recentList',monthMovements().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5));return;
   }
   $('#dailySpendLabel').textContent='Oggi puoi ancora spendere';
   const monthlyResources=effectiveMonthlyResources(openingBalance,t.income),spendable=Math.max(0,monthlyResources-goal),spendableAvailable=Math.max(0,spendable-t.expense),rawPct=spendable?t.expense/spendable*100:(t.expense>0?100:0),pct=Math.min(100,rawPct);
-  $('#realAvailable').textContent=eur(spendableAvailable);$('#totalIncome').textContent=eur(t.income);$('#totalExpense').textContent=eur(t.expense);$('#pendingRecurring').textContent=eur(goal);$('#dailySpend').textContent=eur(spendableAvailable/remainingDays());$('#daysLeft').textContent=`${remainingDays()} giorni rimanenti`;$('#budgetBar').style.width=`${pct}%`;$('#heroBudgetBar').style.width=`${pct}%`;$('#heroBudgetPercent').textContent=`${Math.round(rawPct)}%`;$('#heroBudgetBar').style.background=rawPct>=100?'#fecaca':rawPct>=80?'#fde68a':'#fff';$('#budgetBar').style.background=rawPct>=100?'var(--danger)':rawPct>=80?'var(--warning)':'var(--primary2)';$('#budgetUsed').textContent=`${eur(t.expense)} usati`;$('#budgetLimit').textContent=rawPct>=100?`Soldi spendibili finiti · limite ${eur(spendable)}`:`${eur(spendableAvailable)} rimasti su ${eur(spendable)}`;renderCategoryChart('#categoryChart');renderMovementList('#recentList',monthMovements().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5));renderHomeGoal()
-}
-function renderHomeGoal(){
-  const allocation=goalAllocations()[0],panel=$('#homeGoalPanel');
-  panel.hidden=!allocation;
-  if(!allocation)return;
-  $('#homeGoalName').textContent=allocation.name;
-  $('#homeGoalPercent').textContent=`${Math.round(allocation.percent)}%`;
-  $('#homeGoalBar').style.width=`${allocation.percent}%`;
-  $('#homeGoalProgress').textContent=`${eur(allocation.allocated)} / ${eur(allocation.amount)}`;
-  $('#homeGoalMissing').textContent=allocation.percent>=100?'Obiettivo raggiunto':`Mancano ${eur(allocation.amount-allocation.allocated)}`;
+  $('#realAvailable').textContent=eur(spendableAvailable);$('#totalIncome').textContent=eur(t.income);$('#totalExpense').textContent=eur(t.expense);$('#pendingRecurring').textContent=eur(goal);$('#dailySpend').textContent=eur(spendableAvailable/remainingDays());$('#daysLeft').textContent=`${remainingDays()} giorni rimanenti`;$('#budgetBar').style.width=`${pct}%`;$('#heroBudgetBar').style.width=`${pct}%`;$('#heroBudgetPercent').textContent=`${Math.round(rawPct)}%`;$('#heroBudgetBar').style.background=rawPct>=100?'#fecaca':rawPct>=80?'#fde68a':'#fff';$('#budgetBar').style.background=rawPct>=100?'var(--danger)':rawPct>=80?'var(--warning)':'var(--primary2)';$('#budgetUsed').textContent=`${eur(t.expense)} usati`;$('#budgetLimit').textContent=rawPct>=100?`Soldi spendibili finiti · limite ${eur(spendable)}`:`${eur(spendableAvailable)} rimasti su ${eur(spendable)}`;renderMovementList('#recentList',monthMovements().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5))
 }
 function renderMovementList(sel,list){const el=$(sel);el.innerHTML=list.length?list.map(m=>`<div class="movement-item"><div class="movement-icon">${categoryIcon(m.category,m.type)}</div><div class="movement-main"><strong>${m.description||m.category}</strong><small>${new Date(m.date+'T12:00').toLocaleDateString('it-IT')} · ${m.category}</small></div><div><div class="movement-amount ${m.type}">${m.type==='expense'?'-':'+'}${eur(m.amount)}</div><div class="action-row"><button class="mini-btn" onclick="editMovement('${m.id}')">✎</button><button class="mini-btn" onclick="deleteMovement('${m.id}')">×</button></div></div></div>`).join(''):'<div class="empty">Nessun movimento.</div>'}
 function renderMovements(){const q=$('#searchInput').value.toLowerCase(),f=$('#typeFilter').value;let list=data.movements.filter(m=>m.date.startsWith(ym(currentMonth))).filter(m=>(f==='all'||m.type===f)&&(`${m.description} ${m.category}`.toLowerCase().includes(q))).sort((a,b)=>b.date.localeCompare(a.date));renderMovementList('#movementList',list)}
@@ -795,7 +775,7 @@ $('#settingsForm').onsubmit=e=>{e.preventDefault();const openingBalance=Number($
 $('#analysisPeriod').onchange=renderAnalysis;$('#searchInput').oninput=renderMovements;$('#typeFilter').onchange=renderMovements;$('#prevMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderAll()};$('#nextMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderAll()};
 $('#exportBtn').onclick=()=>{
   const now=new Date(), stamp=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-  const backup={app:'Gestione Spese',version:'2.1.5',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
+  const backup={app:'Gestione Spese',version:'2.1.6',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),a=document.createElement('a'),url=URL.createObjectURL(blob);
   a.href=url;a.download=`gestione-spese-backup-${stamp}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
