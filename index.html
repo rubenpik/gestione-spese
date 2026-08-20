@@ -67,7 +67,7 @@ input[type="number"] {
     <header class="topbar">
       <div>
         <p class="eyebrow">IL MIO BILANCIO</p>
-        <h1>Gestione Spese <span class="version-badge">v2.1.7</span></h1>
+        <h1>Gestione Spese <span class="version-badge">v2.1.8</span></h1>
       </div>
     </header>
 
@@ -264,8 +264,8 @@ input[type="number"] {
         <button id="recurringSingleLabel" class="segment" type="button" data-expense-kind="single">Spesa singola</button>
         <button id="recurringFixedLabel" class="segment active" type="button" data-expense-kind="recurring">Spesa fissa</button>
       </div>
-      <label>Nome<input id="recurringName" enterkeyhint="next" maxlength="60" required /></label>
       <label>Importo<input id="recurringAmount" type="number" inputmode="decimal" enterkeyhint="next" min="0.01" step="0.01" required /></label>
+      <label>Descrizione<input id="recurringName" enterkeyhint="next" maxlength="60" autocomplete="off" required /></label>
       <label>Categoria<select id="recurringCategory" required></select></label>
       <label>Durata
         <select id="recurringDuration">
@@ -708,7 +708,7 @@ function updateEntryKindLabels(type){const noun=type==='income'?'Entrata':'Spesa
 function openMovement(m=null,type='expense'){$('#movementForm').reset();$('#movementId').value=m?.id||'';const selectedType=m?.type||type;setMovementType(selectedType);updateEntryKindLabels(selectedType);$('#movementKindSwitch').hidden=Boolean(m);$('#amountInput').value=m?.amount||'';$('#descriptionInput').value=m?.description||'';$('#dateInput').value=m?.date||new Date().toISOString().slice(0,10);if(m)selectCategory(m.category);else{const first=CATEGORIES[selectedType][0][0];selectCategory(first)}const label=selectedType==='expense'?'spesa':'entrata';$('#movementModalTitle').textContent=m?`Modifica ${label}`:`Nuova ${label}`;$('#saveMovementBtn').textContent=m?`Salva modifiche`:`Salva ${label}`;$('#movementDialog').showModal();setTimeout(()=>$('#amountInput').focus(),120)}
 function setMovementType(type){$('#movementType').value=type;populateCategories(type,$('#categoryInput'));$('#descriptionInput').placeholder=type==='income'?'Da dove arriva l’entrata?':'Dove hai speso?';$('#descriptionDropdown').classList.remove('visible')}
 function setRecurringDuration(durationMonths){const value=durationMonths===null||durationMonths===undefined?'forever':['3','6','12'].includes(String(durationMonths))?String(durationMonths):'custom';$('#recurringDuration').value=value;$('#recurringCustomMonths').value=value==='custom'?durationMonths:'';$('#recurringCustomDurationLabel').hidden=value!=='custom'}
-function openRecurring(r=null,type='expense'){const selectedType=r?.type==='income'||type==='income'?'income':'expense',label=selectedType==='income'?'entrata':'spesa';$('#recurringForm').reset();$('#recurringId').value=r?.id||'';$('#recurringType').value=selectedType;updateEntryKindLabels(selectedType);$('#recurringModalTitle').textContent=r?`Modifica ${label} fissa`:`Nuova ${label} fissa`;$('#recurringKindSwitch').hidden=Boolean(r);$('#recurringName').value=r?.name||'';$('#recurringAmount').value=r?.amount||'';populateCategories(selectedType,$('#recurringCategory'));$('#recurringCategory').value=r?.category||CATEGORIES[selectedType][0][0];setRecurringDuration(r?.durationMonths);$('#recurringDialog').showModal();setTimeout(()=>$('#recurringName').focus(),100)}
+function openRecurring(r=null,type='expense'){const selectedType=r?.type==='income'||type==='income'?'income':'expense',label=selectedType==='income'?'entrata':'spesa';$('#recurringForm').reset();$('#recurringId').value=r?.id||'';$('#recurringType').value=selectedType;updateEntryKindLabels(selectedType);$('#recurringModalTitle').textContent=r?`Modifica ${label} fissa`:`Nuova ${label} fissa`;$('#recurringKindSwitch').hidden=Boolean(r);$('#recurringName').value=r?.name||'';$('#recurringName').placeholder=selectedType==='income'?'Da dove arriva l’entrata?':'Dove hai speso?';$('#recurringAmount').value=r?.amount||'';populateCategories(selectedType,$('#recurringCategory'));$('#recurringCategory').value=r?.category||CATEGORIES[selectedType][0][0];setRecurringDuration(r?.durationMonths);$('#recurringDialog').showModal();setTimeout(()=>$('#recurringAmount').focus(),100)}
 window.editMovement=id=>openMovement(data.movements.find(m=>m.id===id));window.deleteMovement=id=>{if(confirm('Eliminare questo movimento?')){data.movements=data.movements.filter(m=>m.id!==id);save()}}
 window.editRecurring=id=>{const r=data.recurring.find(x=>x.id===id);if(r)openRecurring(r)};window.deleteRecurring=id=>{if(confirm('Eliminare questa spesa fissa?')){data.recurring=data.recurring.filter(r=>r.id!==id);const currentKey=ym(currentMonth);data.movements=data.movements.filter(m=>!(m.recurringId===id&&m.autoRecurring&&m.date.slice(0,7)>=currentKey));save()}}
 function setGoalPriority(priority){$('#goalPriority').value=String(priority);$$('.priority-option').forEach(button=>button.classList.toggle('active',Number(button.dataset.priority)===Number(priority)))}
@@ -737,7 +737,7 @@ $('#recurringForm').onsubmit=e=>{
   const durationChoice=$('#recurringDuration').value;
   const durationMonths=durationChoice==='forever'?null:Number(durationChoice==='custom'?$('#recurringCustomMonths').value:durationChoice);
   if(!name||!Number.isFinite(amount)||amount<=0||!category){
-    alert('Compila nome, importo e categoria.');
+    alert('Compila importo, descrizione e categoria.');
     return;
   }
   if(durationMonths!==null&&(!Number.isInteger(durationMonths)||durationMonths<1)){
@@ -777,7 +777,7 @@ $('#settingsForm').onsubmit=e=>{e.preventDefault();const openingBalance=Number($
 $('#analysisPeriod').onchange=renderAnalysis;$('#searchInput').oninput=renderMovements;$('#typeFilter').onchange=renderMovements;$('#prevMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderAll()};$('#nextMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderAll()};
 $('#exportBtn').onclick=()=>{
   const now=new Date(), stamp=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-  const backup={app:'Gestione Spese',version:'2.1.7',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
+  const backup={app:'Gestione Spese',version:'2.1.8',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),a=document.createElement('a'),url=URL.createObjectURL(blob);
   a.href=url;a.download=`gestione-spese-backup-${stamp}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
@@ -809,6 +809,8 @@ function focusNext(current, next) {
 }
 focusNext($('#amountInput'), $('#descriptionInput'));
 focusNext($('#descriptionInput'), $('#categoryInput'));
+focusNext($('#recurringAmount'), $('#recurringName'));
+focusNext($('#recurringName'), $('#recurringCategory'));
 focusNext($('#openingBalanceInput'), $('#savingGoalInput'));
 
 $('#recurringDuration').addEventListener('change',()=>{$('#recurringCustomDurationLabel').hidden=$('#recurringDuration').value!=='custom';if($('#recurringDuration').value==='custom')setTimeout(()=>$('#recurringCustomMonths').focus(),50)});
