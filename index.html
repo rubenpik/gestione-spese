@@ -67,7 +67,7 @@ input[type="number"] {
     <header class="topbar">
       <div>
         <p class="eyebrow">IL MIO BILANCIO</p>
-        <h1>Gestione Spese <span class="version-badge">v2.1.8</span></h1>
+        <h1>Gestione Spese <span class="version-badge">v2.1.9</span></h1>
       </div>
     </header>
 
@@ -264,7 +264,7 @@ input[type="number"] {
         <button id="recurringSingleLabel" class="segment" type="button" data-expense-kind="single">Spesa singola</button>
         <button id="recurringFixedLabel" class="segment active" type="button" data-expense-kind="recurring">Spesa fissa</button>
       </div>
-      <label>Importo<input id="recurringAmount" type="number" inputmode="decimal" enterkeyhint="next" min="0.01" step="0.01" required /></label>
+      <label>Importo<input id="recurringAmount" class="amount-input" type="number" inputmode="decimal" enterkeyhint="next" min="0.01" step="0.01" placeholder="0,00" required /></label>
       <label>Descrizione<input id="recurringName" enterkeyhint="next" maxlength="60" autocomplete="off" required /></label>
       <label>Categoria<select id="recurringCategory" required></select></label>
       <label>Durata
@@ -777,7 +777,7 @@ $('#settingsForm').onsubmit=e=>{e.preventDefault();const openingBalance=Number($
 $('#analysisPeriod').onchange=renderAnalysis;$('#searchInput').oninput=renderMovements;$('#typeFilter').onchange=renderMovements;$('#prevMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderAll()};$('#nextMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderAll()};
 $('#exportBtn').onclick=()=>{
   const now=new Date(), stamp=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-  const backup={app:'Gestione Spese',version:'2.1.8',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
+  const backup={app:'Gestione Spese',version:'2.1.9',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),a=document.createElement('a'),url=URL.createObjectURL(blob);
   a.href=url;a.download=`gestione-spese-backup-${stamp}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
