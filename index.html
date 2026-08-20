@@ -18,6 +18,7 @@
 .hero-redesign{text-align:center}.hero-kicker{font-size:.72rem;letter-spacing:.13em;font-weight:800;opacity:.82}.hero-redesign h2{font-size:2.7rem;margin:4px 0 4px}.hero-subtitle{font-size:.82rem;opacity:.78;margin-bottom:20px!important}.hero-budget-line{display:flex;justify-content:space-between;align-items:center;font-size:.76rem;margin-bottom:7px}.hero-progress{height:9px;background:rgba(255,255,255,.18);border-radius:999px;overflow:hidden;margin-bottom:18px}.hero-progress>div{height:100%;width:0;background:#fff;border-radius:999px;transition:.3s}.daily-card strong{color:var(--primary)}.action-sheet{margin:auto auto 0;width:min(100%,720px);max-width:none}.action-sheet::backdrop{background:rgba(15,23,22,.58)}.action-card{border-radius:28px 28px 0 0;padding:22px 18px calc(24px + env(safe-area-inset-bottom))}.operation-choice{width:100%;display:flex;align-items:center;gap:14px;border:1px solid var(--border);border-radius:18px;padding:15px;background:var(--card);color:var(--text);text-align:left}.operation-choice>span{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;font-size:1.5rem;font-weight:800}.operation-choice strong,.operation-choice small{display:block}.operation-choice small{color:var(--muted);margin-top:3px}.expense-choice>span{background:#feecec;color:var(--danger)}.income-choice>span{background:#e7f7f4;color:var(--primary)}
 .expense-choice>span{background:var(--danger);color:#fff}.income-choice>span{background:var(--primary);color:#fff}.expense-kind-switch{margin:2px 0 4px}.expense-kind-switch .segment.active{background:var(--danger);color:#fff}.expense-kind-switch.income-mode .segment.active{background:var(--primary)}.duration-note{color:var(--muted);font-size:.76rem;line-height:1.4;margin:-4px 0 0}.recurring-ended{opacity:.65}[hidden]{display:none!important}.theme-setting{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:4px 0}.theme-setting strong,.theme-setting small{display:block}.theme-setting small{color:var(--muted);font-weight:500;margin-top:5px;line-height:1.35}.switch-control{position:relative!important;display:block!important;flex:0 0 54px;width:54px;height:32px}.switch-control input{position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;padding:0!important;min-height:0!important}.switch-track{position:absolute;inset:0;background:#aab6b3;border-radius:999px;transition:.22s;cursor:pointer}.switch-track:after{content:"";position:absolute;width:24px;height:24px;left:4px;top:4px;background:#fff;border-radius:50%;box-shadow:0 2px 5px rgba(0,0,0,.18);transition:.22s}.switch-control input:checked+.switch-track{background:var(--primary)}.switch-control input:checked+.switch-track:after{transform:translateX(22px)}.switch-control input:focus-visible+.switch-track{outline:3px solid rgba(20,184,166,.25);outline-offset:2px}
 .bottom-nav{gap:4px}.nav-item{border-radius:16px;min-height:54px;transition:background .2s,color .2s,transform .2s}.nav-item.active{background:#dff3ee;color:var(--primary);box-shadow:inset 0 0 0 1px rgba(15,118,110,.12)}.nav-item.active span{transform:scale(1.08)}.dark .nav-item.active{background:#21403a;box-shadow:inset 0 0 0 1px #31584f}
+.recurring-badge{display:inline-flex;align-items:center;gap:4px;margin-left:6px;padding:2px 7px;border-radius:999px;background:#e7f7f4;color:var(--primary);font-size:.66rem;font-weight:850;vertical-align:middle}.dark .recurring-badge{background:#21403a}.undo-toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(86px + env(safe-area-inset-bottom));width:min(calc(100% - 28px),520px);z-index:60;background:var(--text);color:var(--card);padding:13px 15px;border-radius:16px;box-shadow:0 14px 34px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:space-between;gap:14px}.undo-toast button{border:0;background:transparent;color:var(--primary2);font-weight:900;padding:5px}.choice-actions{display:flex;flex-direction:column;gap:9px}.backup-status{display:block;color:var(--muted);line-height:1.45}
 @media(max-width:420px){.app-shell{padding-left:12px;padding-right:12px}.hero-card{padding:18px}.hero-card h2{font-size:1.95rem}.hero-grid{gap:7px}.hero-grid div{padding:10px}.hero-grid strong{font-size:.8rem}.stats-grid{grid-template-columns:1fr 1fr}.stat-card{padding:14px}.stat-card strong{font-size:1.08rem}}
 
 
@@ -67,7 +68,7 @@ input[type="number"] {
     <header class="topbar">
       <div>
         <p class="eyebrow">IL MIO BILANCIO</p>
-        <h1>Gestione Spese <span class="version-badge">v2.1.9</span></h1>
+        <h1>Gestione Spese <span class="version-badge">v2.2.0</span></h1>
       </div>
     </header>
 
@@ -210,7 +211,7 @@ input[type="number"] {
           <h3>Backup dati</h3>
           <button id="exportBtn" class="secondary-btn">Esporta backup completo</button>
           <label class="secondary-btn file-label">Importa backup<input id="importInput" type="file" accept="application/json,.json" hidden /></label>
-          <small style="color:var(--muted);line-height:1.45">Il backup comprende movimenti, spese fisse, impostazioni, obiettivi, Fondo Obiettivi e storico mensile. Conservalo in File o iCloud Drive.</small>
+          <small id="lastBackupInfo" class="backup-status">Ultimo backup: mai effettuato</small>
           <button id="resetBtn" class="danger-btn">Cancella tutti i dati</button>
         </article>
       </section>
@@ -232,6 +233,18 @@ input[type="number"] {
       <div class="modal-head"><div><p class="eyebrow">NUOVA OPERAZIONE</p><h3>Cosa vuoi aggiungere?</h3></div><button type="button" class="icon-btn close-modal">×</button></div>
       <button id="actionExpenseBtn" class="operation-choice expense-choice" type="button"><span>−</span><div><strong>Nuova spesa</strong><small>Registra un’uscita</small></div></button>
       <button id="actionIncomeBtn" class="operation-choice income-choice" type="button"><span>＋</span><div><strong>Nuova entrata</strong><small>Registra un incasso</small></div></button>
+    </div>
+  </dialog>
+
+  <dialog id="recurringEditChoiceDialog" class="modal">
+    <div class="modal-card">
+      <div class="modal-head"><h3>Modifica movimento ricorrente</h3><button type="button" class="icon-btn close-modal">×</button></div>
+      <p class="duration-note">Scegli se applicare la modifica soltanto al mese visualizzato oppure a tutta la ricorrenza.</p>
+      <div class="choice-actions">
+        <button id="editSingleOccurrenceBtn" class="primary-btn" type="button">Solo questo mese</button>
+        <button id="editWholeRecurringBtn" class="secondary-btn" type="button">Tutta la ricorrenza</button>
+        <button class="text-btn close-modal" type="button">Annulla</button>
+      </div>
     </div>
   </dialog>
 
@@ -300,6 +313,9 @@ input[type="number"] {
     </form>
   </dialog>
 
+  <div id="undoToast" class="undo-toast" hidden><span id="undoMessage">Movimento eliminato</span><button id="undoBtn" type="button">Annulla</button></div>
+
+  <script src="app-core.js"></script>
   <script>
 const CATEGORIES={
   expense:[
@@ -325,11 +341,11 @@ const CATEGORIES={
   ]
 };
 const KEY='gestioneSpeseCleanV17';
-const DATA_SCHEMA_VERSION=7;
-const defaultData={schemaVersion:DATA_SCHEMA_VERSION,settings:{budget:0,savingGoal:0,openingBalance:0,theme:'light',configured:false},movements:[],recurring:[],categoryMemory:{},goals:[],purchasedGoals:[],goalFund:0,monthlyHistory:{},goalTrackingStart:null};
+const DATA_SCHEMA_VERSION=8;
+const defaultData={schemaVersion:DATA_SCHEMA_VERSION,settings:{budget:0,savingGoal:0,openingBalance:0,theme:'light',configured:false,lastBackupAt:null},movements:[],recurring:[],recurringSkips:[],categoryMemory:{},goals:[],purchasedGoals:[],goalFund:0,monthlyHistory:{},goalTrackingStart:null};
 let data=load();let currentMonth=new Date();currentMonth.setDate(1);
 const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
-function load(){try{const stored=JSON.parse(localStorage.getItem(KEY)||'{}');return {...structuredClone(defaultData),...stored,schemaVersion:Number(stored.schemaVersion)||0,settings:{...defaultData.settings,...(stored.settings||{})},categoryMemory:{...(stored.categoryMemory||{})},goals:Array.isArray(stored.goals)?stored.goals:[],purchasedGoals:Array.isArray(stored.purchasedGoals)?stored.purchasedGoals:[],monthlyHistory:stored.monthlyHistory&&typeof stored.monthlyHistory==='object'?stored.monthlyHistory:{}}}catch{return structuredClone(defaultData)}}
+function load(){try{const stored=JSON.parse(localStorage.getItem(KEY)||'{}');return {...structuredClone(defaultData),...stored,schemaVersion:Number(stored.schemaVersion)||0,settings:{...defaultData.settings,...(stored.settings||{})},recurringSkips:Array.isArray(stored.recurringSkips)?stored.recurringSkips:[],categoryMemory:{...(stored.categoryMemory||{})},goals:Array.isArray(stored.goals)?stored.goals:[],purchasedGoals:Array.isArray(stored.purchasedGoals)?stored.purchasedGoals:[],monthlyHistory:stored.monthlyHistory&&typeof stored.monthlyHistory==='object'?stored.monthlyHistory:{}}}catch{return structuredClone(defaultData)}}
 function saveDataOnly(){localStorage.setItem(KEY,JSON.stringify(data))}
 function save(){saveDataOnly();renderAll()}
 const eur=n=>new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR'}).format(Number(n)||0);
@@ -450,6 +466,12 @@ function migrateData(){
     data.schemaVersion=7;
     changed=true;
   }
+  if(currentVersion<8){
+    data.recurringSkips=Array.isArray(data.recurringSkips)?data.recurringSkips:[];
+    data.settings.lastBackupAt=data.settings.lastBackupAt||null;
+    data.schemaVersion=8;
+    changed=true;
+  }
   if(changed) saveDataOnly();
   return changed;
 }
@@ -480,7 +502,7 @@ function rebuildGoalFundFromHistory(){
     const expense=list.filter(m=>m.type==='expense').reduce((sum,m)=>sum+Number(m.amount||0),0);
     const savingGoal=Number(item.savingGoal)||0,openingBalance=Number(item.openingBalance??item.budget)||0;
     const resources=income>0?income:openingBalance;
-    const extra=resources>0?Math.round((resources-savingGoal-expense)*100)/100:0;
+    const extra=resources>0?monthlyExtra(resources,savingGoal,expense):0;
     const applied=extra<0?-Math.min(fund,Math.abs(extra)):extra;
     fund=Math.max(0,fund+applied);
     Object.assign(item,{income,expense,openingBalance,effectiveResources:resources,extra,applied,fundAfter:fund});
@@ -498,7 +520,7 @@ function closeCompletedMonths(){
     const expense=list.filter(m=>m.type==='expense').reduce((sum,m)=>sum+Number(m.amount||0),0);
     const openingBalance=Number(data.settings.openingBalance)||0,savingGoal=Number(data.settings.savingGoal)||0;
     const monthlyResources=income>0?income:openingBalance;
-    const extra=monthlyResources>0?Math.round((monthlyResources-savingGoal-expense)*100)/100:0;
+    const extra=monthlyResources>0?monthlyExtra(monthlyResources,savingGoal,expense):0;
     const before=Math.max(0,Number(data.goalFund)||0);
     const applied=extra<0?-Math.min(before,Math.abs(extra)):extra;
     data.goalFund=Math.max(0,before+applied);
@@ -554,16 +576,14 @@ function repairRecurringDefinitions(){
     });
 }
 
-function monthDistance(startKey,endKey){const [sy,sm]=String(startKey).split('-').map(Number),[ey,em]=String(endKey).split('-').map(Number);return (ey-sy)*12+(em-sm)}
-function recurringActiveForMonth(r,monthKey){const offset=monthDistance(r.startMonth||String(r.createdAt).slice(0,7),monthKey);return offset>=0&&(r.durationMonths===null||r.durationMonths===undefined||offset<Number(r.durationMonths))}
-function recurringMonthsRemaining(r,monthKey=ym(new Date())){if(r.durationMonths===null||r.durationMonths===undefined)return null;return Math.max(0,Number(r.durationMonths)-monthDistance(r.startMonth||String(r.createdAt).slice(0,7),monthKey))}
-function ensureRecurringForMonth(month=currentMonth){const monthKey=ym(month);data.recurring.forEach(r=>{const existing=data.movements.find(m=>m.recurringId===r.id&&String(m.date||'').startsWith(monthKey));if(!recurringActiveForMonth(r,monthKey)){if(existing?.autoRecurring)data.movements=data.movements.filter(m=>m.id!==existing.id);return}const type=r.type==='income'?'income':'expense';if(!existing){data.movements.push({id:crypto.randomUUID(),type,amount:Number(r.amount),category:r.category,description:r.name,date:`${monthKey}-01`,recurringId:r.id,autoRecurring:true})}else if(existing.autoRecurring){existing.type=type;existing.amount=Number(r.amount);existing.category=r.category;existing.description=r.name}})}
+const {effectiveMonthlyResources,monthDistance,monthlyExtra,recurringActiveForMonth,recurringMonthsRemaining,recurringEndMonth}=AppCore;
+function recurringSkipKey(recurringId,monthKey){return `${recurringId}:${monthKey}`}
+function ensureRecurringForMonth(month=currentMonth){const monthKey=ym(month);data.recurringSkips=Array.isArray(data.recurringSkips)?data.recurringSkips:[];data.recurring.forEach(r=>{const existing=data.movements.find(m=>m.recurringId===r.id&&String(m.date||'').startsWith(monthKey));const skipped=data.recurringSkips.includes(recurringSkipKey(r.id,monthKey));if(skipped||!recurringActiveForMonth(r,monthKey)){if(existing?.autoRecurring&&!existing.recurringOverride)data.movements=data.movements.filter(m=>m.id!==existing.id);return}const type=r.type==='income'?'income':'expense';if(!existing){data.movements.push({id:crypto.randomUUID(),type,amount:Number(r.amount),category:r.category,description:r.name,date:`${monthKey}-01`,recurringId:r.id,autoRecurring:true})}else if(existing.autoRecurring&&!existing.recurringOverride){existing.type=type;existing.amount=Number(r.amount);existing.category=r.category;existing.description=r.name}})}
 function daysInMonth(d){return new Date(d.getFullYear(),d.getMonth()+1,0).getDate()}
 function remainingDays(){const now=new Date();if(ym(now)!==ym(currentMonth)) return daysInMonth(currentMonth);return Math.max(1,daysInMonth(now)-now.getDate()+1)}
 function categoryIcon(name,type='expense'){return (CATEGORIES[type].find(c=>c[0]===name)||['','•'])[1]}
 function pendingRecurringAmount(){return 0}
 function totals(){const ms=monthMovements();return {income:ms.filter(m=>m.type==='income').reduce((s,m)=>s+Number(m.amount),0),expense:ms.filter(m=>m.type==='expense').reduce((s,m)=>s+Number(m.amount),0)}}
-function effectiveMonthlyResources(openingBalance,income){return Math.max(Number(openingBalance)||0,Number(income)||0)}
 
 function groupByCategory(list,type='expense'){
   const totalsMap=new Map();
@@ -622,7 +642,20 @@ function renderHome(){
   const monthlyResources=effectiveMonthlyResources(openingBalance,t.income),spendable=Math.max(0,monthlyResources-goal),spendableAvailable=Math.max(0,spendable-t.expense),rawPct=spendable?t.expense/spendable*100:(t.expense>0?100:0),pct=Math.min(100,rawPct);
   $('#realAvailable').textContent=eur(spendableAvailable);$('#totalIncome').textContent=eur(t.income);$('#totalExpense').textContent=eur(t.expense);$('#pendingRecurring').textContent=eur(goal);$('#dailySpend').textContent=eur(spendableAvailable/remainingDays());$('#daysLeft').textContent=`${remainingDays()} giorni rimanenti`;$('#budgetBar').style.width=`${pct}%`;$('#heroBudgetBar').style.width=`${pct}%`;$('#heroBudgetPercent').textContent=`${Math.round(rawPct)}%`;$('#heroBudgetBar').style.background=rawPct>=100?'#fecaca':rawPct>=80?'#fde68a':'#fff';$('#budgetBar').style.background=rawPct>=100?'var(--danger)':rawPct>=80?'var(--warning)':'var(--primary2)';$('#budgetUsed').textContent=`${eur(t.expense)} usati`;$('#budgetLimit').textContent=rawPct>=100?`Soldi spendibili finiti · limite ${eur(spendable)}`:`${eur(spendableAvailable)} rimasti su ${eur(spendable)}`;renderMovementList('#recentList',monthMovements().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5))
 }
-function renderMovementList(sel,list){const el=$(sel);el.innerHTML=list.length?list.map(m=>`<div class="movement-item"><div class="movement-icon">${categoryIcon(m.category,m.type)}</div><div class="movement-main"><strong>${m.description||m.category}</strong><small>${new Date(m.date+'T12:00').toLocaleDateString('it-IT')} · ${m.category}</small></div><div><div class="movement-amount ${m.type}">${m.type==='expense'?'-':'+'}${eur(m.amount)}</div><div class="action-row"><button class="mini-btn" onclick="editMovement('${m.id}')">✎</button><button class="mini-btn" onclick="deleteMovement('${m.id}')">×</button></div></div></div>`).join(''):'<div class="empty">Nessun movimento.</div>'}
+function renderMovementList(sel,list){
+  const el=$(sel);
+  el.innerHTML=list.length?list.map(m=>`<div class="movement-item">
+    <div class="movement-icon">${categoryIcon(m.category,m.type)}</div>
+    <div class="movement-main">
+      <strong>${escapeHtml(m.description||m.category)}${m.recurringId?'<span class="recurring-badge">↻ Ricorrente</span>':''}</strong>
+      <small>${new Date(m.date+'T12:00').toLocaleDateString('it-IT')} · ${escapeHtml(m.category)}</small>
+    </div>
+    <div>
+      <div class="movement-amount ${m.type}">${m.type==='expense'?'-':'+'}${eur(m.amount)}</div>
+      <div class="action-row"><button class="mini-btn" onclick="editMovement('${m.id}')" aria-label="Modifica">✎</button><button class="mini-btn" onclick="deleteMovement('${m.id}')" aria-label="Elimina">×</button></div>
+    </div>
+  </div>`).join(''):'<div class="empty">Nessun movimento.</div>'
+}
 function renderMovements(){const q=$('#searchInput').value.toLowerCase(),f=$('#typeFilter').value;let list=data.movements.filter(m=>m.date.startsWith(ym(currentMonth))).filter(m=>(f==='all'||m.type===f)&&(`${m.description} ${m.category}`.toLowerCase().includes(q))).sort((a,b)=>b.date.localeCompare(a.date));renderMovementList('#movementList',list)}
 function renderRecurring(){
   repairRecurringDefinitions();
@@ -642,7 +675,9 @@ function renderRecurring(){
         const category=String(r.category||'Altro');
         const type=r.type==='income'?'income':'expense';
         const remaining=recurringMonthsRemaining(r);
-        const durationText=remaining===null?'Senza scadenza':remaining>0?`${remaining} ${remaining===1?'mese rimanente':'mesi rimanenti'}`:'Terminata';
+        const endMonth=recurringEndMonth(r);
+        const endLabel=endMonth?formatMonthKey(endMonth):'';
+        const durationText=remaining===null?'Senza scadenza':remaining>0?`${remaining} ${remaining===1?'mese rimanente':'mesi rimanenti'} · termina a ${endLabel}`:`Terminata a ${endLabel}`;
         return `<div class="movement-item ${remaining===0?'recurring-ended':''}">
           <div class="movement-icon">${categoryIcon(category,type)}</div>
           <div class="movement-main">
@@ -696,7 +731,13 @@ function renderAnalysis(){
   $('#analysisCategories').innerHTML=outRows.length?outRows.map(([c,v])=>`<div class="analysis-item"><span>${categoryIcon(c)} ${c}<small class="category-share">${expense?Math.round(v/expense*100):0}%</small></span><strong>${eur(v)}</strong></div>`).join(''):'<div class="empty">Nessuna uscita nel periodo.</div>';
   $('#analysisIncomeCategories').innerHTML=inRows.length?inRows.map(([c,v])=>`<div class="analysis-item"><span>${categoryIcon(c,'income')} ${c}<small class="category-share">${income?Math.round(v/income*100):0}%</small></span><strong>${eur(v)}</strong></div>`).join(''):'<div class="empty">Nessuna entrata nel periodo.</div>';
 }
-function renderSettings(){$('#savingGoalInput').value=data.settings.savingGoal||'';$('#openingBalanceInput').value=data.settings.openingBalance||'';$('#darkThemeToggle').checked=data.settings.theme==='dark'}
+function renderSettings(){
+  $('#savingGoalInput').value=data.settings.savingGoal||'';
+  $('#openingBalanceInput').value=data.settings.openingBalance||'';
+  $('#darkThemeToggle').checked=data.settings.theme==='dark';
+  const value=data.settings.lastBackupAt;
+  $('#lastBackupInfo').textContent=value?`Ultimo backup: ${new Date(value).toLocaleString('it-IT',{dateStyle:'long',timeStyle:'short'})}`:'Ultimo backup: mai effettuato';
+}
 function populateCategories(type,select){select.innerHTML=CATEGORIES[type].map(([n])=>`<option>${n}</option>`).join('')}
 function normalizeDescription(text){return (text||'').trim().toLowerCase().replace(/\s+/g,' ')}
 function ruleSuggestion(text,type='expense'){if(type!=='expense')return null;const t=normalizeDescription(text);const rules=[['Altro',['amazon','zalando','temu','shein','ebay']],['Supermercato',['esselunga','coop','lidl','aldi','conad','eurospin','supermercato','spesa']],['Carburante',['q8','eni','tamoil','benzina','diesel','carburante']],['Ristoranti e asporto',['mcdonald','ristorante','pizza','pizzeria','kebab','bar']],['Abbonamenti',['netflix','dazn','spotify','icloud','chatgpt']],['Salute',['farmacia','medico','visita','dentista','pediatra']],['Bambini',['pannolini','asilo','latte','bambini']],['Casa',['ikea','leroy merlin','brico']]];for(const [cat,words] of rules)if(words.some(w=>t.includes(w)))return cat;return null}
@@ -709,7 +750,26 @@ function openMovement(m=null,type='expense'){$('#movementForm').reset();$('#move
 function setMovementType(type){$('#movementType').value=type;populateCategories(type,$('#categoryInput'));$('#descriptionInput').placeholder=type==='income'?'Da dove arriva l’entrata?':'Dove hai speso?';$('#descriptionDropdown').classList.remove('visible')}
 function setRecurringDuration(durationMonths){const value=durationMonths===null||durationMonths===undefined?'forever':['3','6','12'].includes(String(durationMonths))?String(durationMonths):'custom';$('#recurringDuration').value=value;$('#recurringCustomMonths').value=value==='custom'?durationMonths:'';$('#recurringCustomDurationLabel').hidden=value!=='custom'}
 function openRecurring(r=null,type='expense'){const selectedType=r?.type==='income'||type==='income'?'income':'expense',label=selectedType==='income'?'entrata':'spesa';$('#recurringForm').reset();$('#recurringId').value=r?.id||'';$('#recurringType').value=selectedType;updateEntryKindLabels(selectedType);$('#recurringModalTitle').textContent=r?`Modifica ${label} fissa`:`Nuova ${label} fissa`;$('#recurringKindSwitch').hidden=Boolean(r);$('#recurringName').value=r?.name||'';$('#recurringName').placeholder=selectedType==='income'?'Da dove arriva l’entrata?':'Dove hai speso?';$('#recurringAmount').value=r?.amount||'';populateCategories(selectedType,$('#recurringCategory'));$('#recurringCategory').value=r?.category||CATEGORIES[selectedType][0][0];setRecurringDuration(r?.durationMonths);$('#recurringDialog').showModal();setTimeout(()=>$('#recurringAmount').focus(),100)}
-window.editMovement=id=>openMovement(data.movements.find(m=>m.id===id));window.deleteMovement=id=>{if(confirm('Eliminare questo movimento?')){data.movements=data.movements.filter(m=>m.id!==id);save()}}
+let pendingRecurringMovementId=null,undoTimer=null,undoAction=null;
+function showUndo(message,action){clearTimeout(undoTimer);undoAction=action;$('#undoMessage').textContent=message;$('#undoToast').hidden=false;undoTimer=setTimeout(()=>{$('#undoToast').hidden=true;undoAction=null},6500)}
+window.editMovement=id=>{
+  const movement=data.movements.find(m=>m.id===id);
+  if(!movement)return;
+  if(movement.recurringId&&data.recurring.some(r=>r.id===movement.recurringId)){
+    pendingRecurringMovementId=id;
+    $('#editSingleOccurrenceBtn').textContent=`Solo ${formatMonthKey(String(movement.date).slice(0,7))}`;
+    $('#recurringEditChoiceDialog').showModal();
+    return;
+  }
+  openMovement(movement);
+};
+window.deleteMovement=id=>{
+  const movement=data.movements.find(m=>m.id===id);if(!movement||!confirm('Eliminare questo movimento?'))return;
+  const snapshot=structuredClone(movement),skipKey=movement.recurringId?recurringSkipKey(movement.recurringId,String(movement.date).slice(0,7)):null;
+  if(skipKey&&!data.recurringSkips.includes(skipKey))data.recurringSkips.push(skipKey);
+  data.movements=data.movements.filter(m=>m.id!==id);save();
+  showUndo('Movimento eliminato',()=>{if(skipKey)data.recurringSkips=data.recurringSkips.filter(key=>key!==skipKey);if(!data.movements.some(m=>m.id===snapshot.id))data.movements.push(snapshot);save()});
+};
 window.editRecurring=id=>{const r=data.recurring.find(x=>x.id===id);if(r)openRecurring(r)};window.deleteRecurring=id=>{if(confirm('Eliminare questa spesa fissa?')){data.recurring=data.recurring.filter(r=>r.id!==id);const currentKey=ym(currentMonth);data.movements=data.movements.filter(m=>!(m.recurringId===id&&m.autoRecurring&&m.date.slice(0,7)>=currentKey));save()}}
 function setGoalPriority(priority){$('#goalPriority').value=String(priority);$$('.priority-option').forEach(button=>button.classList.toggle('active',Number(button.dataset.priority)===Number(priority)))}
 function openGoal(goal=null){$('#goalForm').reset();$('#goalId').value=goal?.id||'';$('#goalName').value=goal?.name||'';$('#goalAmount').value=goal?.amount||'';setGoalPriority(goal?.priority||1);$('#goalModalTitle').textContent=goal?'Modifica obiettivo':'Nuovo obiettivo';$('#goalDialog').showModal();setTimeout(()=>$('#goalName').focus(),100)}
@@ -727,7 +787,10 @@ function switchMovementTab(name){$$('.movement-tab').forEach(button=>button.clas
 function switchView(name){$$('.view').forEach(v=>v.classList.remove('active'));$(`#${name}View`).classList.add('active');$$('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view===name));$('#fab').hidden=!['home','movements'].includes(name);window.scrollTo({top:0,behavior:'smooth'})}
 function applyTheme(){document.documentElement.classList.toggle('dark',data.settings.theme==='dark')}
 $$('[data-view]').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));$$('[data-open-settings]').forEach(b=>b.addEventListener('click',()=>switchView('settings')));$$('[data-movement-tab]').forEach(b=>b.addEventListener('click',()=>switchMovementTab(b.dataset.movementTab)));$$('.priority-option').forEach(b=>b.addEventListener('click',()=>setGoalPriority(b.dataset.priority)));$('#darkThemeToggle').addEventListener('change',e=>{data.settings.theme=e.target.checked?'dark':'light';saveDataOnly();applyTheme()});$$('[data-expense-kind]').forEach(b=>b.addEventListener('click',()=>{const kind=b.dataset.expenseKind;if(kind==='recurring'){if($('#recurringDialog').open)return;const type=$('#movementType').value==='income'?'income':'expense';if($('#movementDialog').open)$('#movementDialog').close();openRecurring(null,type)}else{if($('#movementDialog').open)return;const type=$('#recurringType').value==='income'?'income':'expense';if($('#recurringDialog').open)$('#recurringDialog').close();openMovement(null,type)}}));$('#fab').onclick=()=>$('#actionDialog').showModal();$('#actionExpenseBtn').onclick=()=>{$('#actionDialog').close();openMovement(null,'expense')};$('#actionIncomeBtn').onclick=()=>{$('#actionDialog').close();openMovement(null,'income')};$('#addGoalBtn').onclick=()=>openGoal();$('#addRecurringBtn').onclick=()=>openRecurring(null,'expense');$$('.close-modal').forEach(b=>b.onclick=()=>b.closest('dialog').close());
-$('#movementForm').onsubmit=e=>{e.preventDefault();const id=$('#movementId').value||crypto.randomUUID(),description=$('#descriptionInput').value.trim(),type=$('#movementType').value,category=$('#categoryInput').value;const m={id,type,amount:Number($('#amountInput').value),category,description,date:$('#dateInput').value};if(description){data.categoryMemory=data.categoryMemory||{};data.categoryMemory[normalizeDescription(description)]=category}const i=data.movements.findIndex(x=>x.id===id);i>=0?data.movements[i]=m:data.movements.push(m);$('#movementDialog').close();save()};
+$('#editSingleOccurrenceBtn').onclick=()=>{const movement=data.movements.find(m=>m.id===pendingRecurringMovementId);$('#recurringEditChoiceDialog').close();pendingRecurringMovementId=null;if(movement)openMovement(movement)};
+$('#editWholeRecurringBtn').onclick=()=>{const movement=data.movements.find(m=>m.id===pendingRecurringMovementId),recurring=movement&&data.recurring.find(r=>r.id===movement.recurringId);$('#recurringEditChoiceDialog').close();pendingRecurringMovementId=null;if(recurring)openRecurring(recurring)};
+$('#undoBtn').onclick=()=>{const action=undoAction;clearTimeout(undoTimer);$('#undoToast').hidden=true;undoAction=null;if(action)action()};
+$('#movementForm').onsubmit=e=>{e.preventDefault();const id=$('#movementId').value||crypto.randomUUID(),description=$('#descriptionInput').value.trim(),type=$('#movementType').value,category=$('#categoryInput').value,previous=data.movements.find(x=>x.id===id);const m={id,type,amount:Number($('#amountInput').value),category,description,date:$('#dateInput').value,...(previous?.recurringId?{recurringId:previous.recurringId,autoRecurring:true,recurringOverride:true}:{})};if(description){data.categoryMemory=data.categoryMemory||{};data.categoryMemory[normalizeDescription(description)]=category}const i=data.movements.findIndex(x=>x.id===id);i>=0?data.movements[i]=m:data.movements.push(m);$('#movementDialog').close();save()};
 $('#recurringForm').onsubmit=e=>{
   e.preventDefault();
   const name=$('#recurringName').value.trim();
@@ -763,6 +826,9 @@ $('#recurringForm').onsubmit=e=>{
   if(index>=0) data.recurring[index]=recurringItem;
   else data.recurring.push(recurringItem);
 
+  // La modifica dell'intera ricorrenza torna a essere la fonte dei mesi collegati.
+  data.movements.forEach(m=>{if(m.recurringId===id&&m.autoRecurring)m.recurringOverride=false});
+
   // Crea o aggiorna immediatamente il movimento ricorrente del mese corrente.
   ensureRecurringForMonth(new Date());
   saveDataOnly();
@@ -777,7 +843,8 @@ $('#settingsForm').onsubmit=e=>{e.preventDefault();const openingBalance=Number($
 $('#analysisPeriod').onchange=renderAnalysis;$('#searchInput').oninput=renderMovements;$('#typeFilter').onchange=renderMovements;$('#prevMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderAll()};$('#nextMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderAll()};
 $('#exportBtn').onclick=()=>{
   const now=new Date(), stamp=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-  const backup={app:'Gestione Spese',version:'2.1.9',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
+  data.settings.lastBackupAt=now.toISOString();saveDataOnly();renderSettings();
+  const backup={app:'Gestione Spese',version:'2.2.0',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),a=document.createElement('a'),url=URL.createObjectURL(blob);
   a.href=url;a.download=`gestione-spese-backup-${stamp}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
@@ -787,7 +854,7 @@ $('#importInput').onchange=async e=>{
     const parsed=JSON.parse(await file.text()),incoming=parsed?.data||parsed;
     if(!incoming||typeof incoming!=='object'||!Array.isArray(incoming.movements)||!incoming.settings)throw new Error('invalid');
     if(!confirm(`Importare il backup "${file.name}"? I dati attuali verranno sostituiti.`)){e.target.value='';return}
-    data={...structuredClone(defaultData),...incoming,schemaVersion:Number(incoming.schemaVersion)||Number(parsed.schemaVersion)||0,settings:{...defaultData.settings,...(incoming.settings||{})},movements:[...(incoming.movements||[])],recurring:[...(incoming.recurring||[])],categoryMemory:{...(incoming.categoryMemory||{})},goals:[...(incoming.goals||[])],purchasedGoals:[...(incoming.purchasedGoals||[])],monthlyHistory:incoming.monthlyHistory&&typeof incoming.monthlyHistory==='object'?{...incoming.monthlyHistory}:{}};
+    data={...structuredClone(defaultData),...incoming,schemaVersion:Number(incoming.schemaVersion)||Number(parsed.schemaVersion)||0,settings:{...defaultData.settings,...(incoming.settings||{}),lastBackupAt:incoming.settings?.lastBackupAt||parsed.exportedAt||null},movements:[...(incoming.movements||[])],recurring:[...(incoming.recurring||[])],recurringSkips:[...(incoming.recurringSkips||[])],categoryMemory:{...(incoming.categoryMemory||{})},goals:[...(incoming.goals||[])],purchasedGoals:[...(incoming.purchasedGoals||[])],monthlyHistory:incoming.monthlyHistory&&typeof incoming.monthlyHistory==='object'?{...incoming.monthlyHistory}:{}};
     migrateData();
     data.settings.configured=Number(data.settings.openingBalance)>0;
     save();
