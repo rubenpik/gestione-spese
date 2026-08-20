@@ -4,7 +4,7 @@ PWA personale, ottimizzata per iPhone, per registrare entrate e uscite, controll
 
 ## Versione
 
-**v2.1.6**
+**v2.1.7**
 
 ## Funzioni principali
 
@@ -25,6 +25,8 @@ PWA personale, ottimizzata per iPhone, per registrare entrate e uscite, controll
 - Avanzamento di ogni obiettivo confrontato con l’intero Fondo disponibile
 - Ultima voce dei movimenti sempre accessibile sopra il pulsante flottante
 - Home semplificata, senza riepiloghi duplicati di categorie e obiettivi
+- Navigazione inferiore con sezione attiva evidenziata
+- Interruttore dedicato per il tema scuro nelle Impostazioni
 - Storico mensile bloccato alla chiusura di ogni mese
 - Backup e ripristino compatibili con i dati delle versioni precedenti
 - Tema chiaro/scuro selezionabile dalle Impostazioni e installazione PWA
