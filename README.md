@@ -4,7 +4,7 @@ PWA personale, ottimizzata per iPhone, per registrare entrate e uscite, controll
 
 ## Versione
 
-**v2.2.1**
+**v2.3.0**
 
 ## Funzioni principali
 
@@ -36,16 +36,21 @@ PWA personale, ottimizzata per iPhone, per registrare entrate e uscite, controll
 - Data e ora dell'ultimo backup nelle Impostazioni
 - Test automatici sui calcoli principali
 - Identità visiva coordinata con “Cosa manca?”: font Apple, palette, forme e icone SVG della navigazione
+- Backup cloud automatico con archivi separati per ogni utente
+- Codice personale di recupero a 12 caratteri
+- Ripristino completo su un nuovo dispositivo
+- Funzionamento offline con sincronizzazione al ritorno della connessione
+- Token e codici salvati nel database esclusivamente come hash
 - Storico mensile bloccato alla chiusura di ogni mese
 - Backup e ripristino compatibili con i dati delle versioni precedenti
 - Tema chiaro/scuro selezionabile dalle Impostazioni e installazione PWA
 
 ## Pubblicazione
 
-Il contenuto della repository può essere caricato direttamente come progetto statico su Cloudflare.
+Il progetto viene distribuito come applicazione full-stack Cloudflare Workers con asset statici e database D1.
 
-Il file iniziale deve rimanere `index.html` nella cartella principale.
+L’interfaccia si trova in `app/`, le API in `backend/worker.js` e lo schema D1 in `database/migrations/`.
 
 ## Dati
 
-I dati sono salvati localmente nel browser associato al dominio dell’app. Prima di ogni aggiornamento è consigliato esportare un backup da **Impostazioni → Esporta backup completo**.
+L’app continua a salvare i dati localmente per funzionare offline. Dopo l’attivazione del Backup cloud, ogni modifica viene inoltre salvata automaticamente nel proprio archivio D1. Il backup manuale resta disponibile come ulteriore copia personale.

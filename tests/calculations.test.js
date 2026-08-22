@@ -1,5 +1,6 @@
-const assert = require('node:assert/strict');
-const core = require('../app-core.js');
+import assert from 'node:assert/strict';
+await import('../app/app-core.js');
+const core=globalThis.AppCore;
 
 assert.equal(core.effectiveMonthlyResources(2000, 0), 2000, 'Il saldo iniziale copre i giorni prima dello stipendio');
 assert.equal(core.effectiveMonthlyResources(2000, 2400), 2400, 'Un’entrata mensile maggiore aumenta la disponibilità');

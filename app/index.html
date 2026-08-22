@@ -19,6 +19,7 @@
 .expense-choice>span{background:var(--danger);color:#fff}.income-choice>span{background:var(--primary);color:#fff}.expense-kind-switch{margin:2px 0 4px}.expense-kind-switch .segment.active{background:var(--danger);color:#fff}.expense-kind-switch.income-mode .segment.active{background:var(--primary)}.duration-note{color:var(--muted);font-size:.76rem;line-height:1.4;margin:-4px 0 0}.recurring-ended{opacity:.65}[hidden]{display:none!important}.theme-setting{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:4px 0}.theme-setting strong,.theme-setting small{display:block}.theme-setting small{color:var(--muted);font-weight:500;margin-top:5px;line-height:1.35}.switch-control{position:relative!important;display:block!important;flex:0 0 54px;width:54px;height:32px}.switch-control input{position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;padding:0!important;min-height:0!important}.switch-track{position:absolute;inset:0;background:#aab6b3;border-radius:999px;transition:.22s;cursor:pointer}.switch-track:after{content:"";position:absolute;width:24px;height:24px;left:4px;top:4px;background:#fff;border-radius:50%;box-shadow:0 2px 5px rgba(0,0,0,.18);transition:.22s}.switch-control input:checked+.switch-track{background:var(--primary)}.switch-control input:checked+.switch-track:after{transform:translateX(22px)}.switch-control input:focus-visible+.switch-track{outline:3px solid rgba(20,184,166,.25);outline-offset:2px}
 .bottom-nav{gap:4px}.nav-item{border-radius:14px;min-height:54px;transition:background .2s,color .2s,transform .2s}.nav-item small{font-size:inherit}.nav-item.active{background:#dff3ec;color:var(--primary);box-shadow:inset 0 0 0 1px rgba(15,138,106,.15)}.nav-item.active .nav-icon{transform:scale(1.08)}.dark .nav-item.active{background:#153a2f;box-shadow:inset 0 0 0 1px rgba(32,180,134,.2)}
 .recurring-badge{display:inline-flex;align-items:center;gap:4px;margin-left:6px;padding:2px 7px;border-radius:999px;background:#e7f7f4;color:var(--primary);font-size:.66rem;font-weight:850;vertical-align:middle}.dark .recurring-badge{background:#21403a}.undo-toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(86px + env(safe-area-inset-bottom));width:min(calc(100% - 28px),520px);z-index:60;background:var(--text);color:var(--card);padding:13px 15px;border-radius:16px;box-shadow:0 14px 34px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:space-between;gap:14px}.undo-toast button{border:0;background:transparent;color:var(--primary2);font-weight:900;padding:5px}.choice-actions{display:flex;flex-direction:column;gap:9px}.backup-status{display:block;color:var(--muted);line-height:1.45}
+.cloud-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.cloud-head h3{margin:0 0 5px}.cloud-head p{margin:0;color:var(--muted);font-size:.83rem;line-height:1.4}.cloud-badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 10px;font-size:.72rem;font-weight:850;background:#eceff1;color:#66747a;white-space:nowrap}.cloud-badge.synced{background:#dff3ec;color:var(--primary)}.cloud-badge.working{background:#fff3cd;color:#8a6500}.cloud-badge.error{background:#f8dddd;color:#c33}.cloud-grid{display:grid;gap:11px;margin-top:15px}.cloud-code{font-size:1.3rem;font-weight:900;letter-spacing:2px;text-align:center;padding:14px;border:1px dashed var(--primary);border-radius:14px;background:#dff3ec;user-select:all}.dark .cloud-code{background:#153a2f}.cloud-input{width:100%;min-height:50px;border:1px solid var(--border);background:var(--card);border-radius:14px;padding:13px;font-size:16px;text-transform:uppercase}.cloud-note{font-size:.76rem;color:var(--muted);line-height:1.45;margin:0}.cloud-message{font-size:.8rem;font-weight:750}.cloud-message.error{color:var(--danger)}.cloud-message.ok{color:var(--primary)}.cloud-global{display:inline-grid;place-items:center;width:21px;height:21px;margin-left:5px;border-radius:50%;background:#eceff1;color:#66747a;font-size:.7rem;vertical-align:middle}.cloud-global.synced{background:#dff3ec;color:var(--primary)}.cloud-global.working{background:#fff3cd;color:#8a6500}.cloud-global.error{background:#f8dddd;color:#c33}
 @media(max-width:420px){.app-shell{padding-left:12px;padding-right:12px}.hero-card{padding:18px}.hero-card h2{font-size:1.95rem}.hero-grid{gap:7px}.hero-grid div{padding:10px}.hero-grid strong{font-size:.8rem}.stats-grid{grid-template-columns:1fr 1fr}.stat-card{padding:14px}.stat-card strong{font-size:1.08rem}}
 
 
@@ -68,7 +69,7 @@ input[type="number"] {
     <header class="topbar">
       <div>
         <p class="eyebrow">IL MIO BILANCIO</p>
-        <h1>Gestione Spese <span class="version-badge">v2.2.1</span></h1>
+        <h1>Gestione Spese <span class="version-badge">v2.3.0</span><span id="cloudGlobalStatus" class="cloud-global" aria-label="Backup cloud non configurato">○</span></h1>
       </div>
     </header>
 
@@ -145,7 +146,6 @@ input[type="number"] {
         <div id="recurringPane" class="movement-pane">
           <div class="section-title">
             <div><p class="eyebrow">PIANIFICAZIONE</p><h2>Movimenti ricorrenti</h2></div>
-            <button id="addRecurringBtn" class="small-primary">+ Aggiungi</button>
           </div>
           <div id="recurringList" class="movement-list"></div>
         </div>
@@ -207,6 +207,13 @@ input[type="number"] {
           </div>
           <button class="primary-btn" type="submit">Salva impostazioni</button>
         </form>
+        <article id="cloudSyncCard" class="panel">
+          <div class="cloud-head">
+            <div><h3>Backup cloud</h3><p>Protegge automaticamente tutti i dati dell’app.</p></div>
+            <span id="cloudSyncBadge" class="cloud-badge">Non configurato</span>
+          </div>
+          <div id="cloudSyncContent" class="cloud-grid"></div>
+        </article>
         <article class="panel danger-zone">
           <h3>Backup dati</h3>
           <button id="exportBtn" class="secondary-btn">Esporta backup completo</button>
@@ -341,13 +348,14 @@ const CATEGORIES={
   ]
 };
 const KEY='gestioneSpeseCleanV17';
+const CLOUD_SYNC_KEY='gestioneSpeseCloudV1';
 const DATA_SCHEMA_VERSION=8;
 const defaultData={schemaVersion:DATA_SCHEMA_VERSION,settings:{budget:0,savingGoal:0,openingBalance:0,theme:'light',configured:false,lastBackupAt:null},movements:[],recurring:[],recurringSkips:[],categoryMemory:{},goals:[],purchasedGoals:[],goalFund:0,monthlyHistory:{},goalTrackingStart:null};
-let data=load();let currentMonth=new Date();currentMonth.setDate(1);
+let data=load();let currentMonth=new Date();currentMonth.setDate(1);let cloudState=loadCloudState(),cloudApplying=false,cloudTimer=null,cloudPollTimer=null;
 const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
 function load(){try{const stored=JSON.parse(localStorage.getItem(KEY)||'{}');return {...structuredClone(defaultData),...stored,schemaVersion:Number(stored.schemaVersion)||0,settings:{...defaultData.settings,...(stored.settings||{})},recurringSkips:Array.isArray(stored.recurringSkips)?stored.recurringSkips:[],categoryMemory:{...(stored.categoryMemory||{})},goals:Array.isArray(stored.goals)?stored.goals:[],purchasedGoals:Array.isArray(stored.purchasedGoals)?stored.purchasedGoals:[],monthlyHistory:stored.monthlyHistory&&typeof stored.monthlyHistory==='object'?stored.monthlyHistory:{}}}catch{return structuredClone(defaultData)}}
 function saveDataOnly(){localStorage.setItem(KEY,JSON.stringify(data))}
-function save(){saveDataOnly();renderAll()}
+function save(){saveDataOnly();renderAll();markCloudDirty()}
 const eur=n=>new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR'}).format(Number(n)||0);
 const ym=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
 const monthMovements=()=>data.movements.filter(m=>m.date.startsWith(ym(currentMonth)));
@@ -737,7 +745,68 @@ function renderSettings(){
   $('#darkThemeToggle').checked=data.settings.theme==='dark';
   const value=data.settings.lastBackupAt;
   $('#lastBackupInfo').textContent=value?`Ultimo backup: ${new Date(value).toLocaleString('it-IT',{dateStyle:'long',timeStyle:'short'})}`:'Ultimo backup: mai effettuato';
+  renderCloudSettings();
 }
+function loadCloudState(){try{return JSON.parse(localStorage.getItem(CLOUD_SYNC_KEY)||'{}')}catch{return{}}}
+function persistCloudState(){localStorage.setItem(CLOUD_SYNC_KEY,JSON.stringify(cloudState))}
+function formatRecoveryCode(value){return String(value||'').replace(/[^A-Z0-9]/gi,'').toUpperCase().match(/.{1,4}/g)?.join('-')||''}
+function setCloudStatus(kind,label){
+  const badge=$('#cloudSyncBadge'),global=$('#cloudGlobalStatus'),normalized=kind==='working'?'working':kind==='synced'?'synced':kind==='error'?'error':'';
+  if(badge){badge.className=`cloud-badge ${normalized}`;badge.textContent=label}
+  if(global){global.className=`cloud-global ${normalized}`;global.textContent={synced:'✓',working:'↻',error:'!',offline:'○'}[kind]||'○';global.setAttribute('aria-label',`Backup cloud: ${label}`)}
+}
+function cloudMessage(text,ok=false){const target=$('#cloudMessage');if(target){target.className=`cloud-message ${ok?'ok':'error'}`;target.textContent=text}}
+function renderCloudSettings(){
+  const box=$('#cloudSyncContent');if(!box)return;
+  if(cloudState.token){
+    box.innerHTML=`<div class="cloud-code" title="Codice di recupero">${escapeHtml(formatRecoveryCode(cloudState.recoveryCode))}</div><p class="cloud-note">Conserva questo codice: serve per recuperare l’archivio su un nuovo dispositivo.</p><div class="backup-status">Archivio: <strong>${escapeHtml(cloudState.archiveName||'Il mio archivio')}</strong><br>Ultimo salvataggio: <span id="lastCloudSyncText">${cloudState.lastSyncAt?new Date(cloudState.lastSyncAt).toLocaleString('it-IT'):'in attesa'}</span></div><button class="secondary-btn" type="button" onclick="syncCloudNow(true)">Sincronizza ora</button><button class="secondary-btn" type="button" onclick="rotateCloudRecoveryCode()">Rigenera codice di recupero</button><button class="danger-btn" type="button" onclick="disconnectCloud()">Disconnetti questo dispositivo</button><div id="cloudMessage"></div>`;
+    setCloudStatus(navigator.onLine?'synced':'offline',navigator.onLine?(cloudState.dirty?'In attesa':'Protetto'):'Offline');
+  }else{
+    box.innerHTML=`<label>Nome archivio<input id="cloudArchiveName" class="cloud-input" maxlength="40" placeholder="Es. Archivio personale" value="Il mio archivio"></label><button class="primary-btn" type="button" onclick="createCloudArchive()">Attiva il backup cloud</button><div style="height:1px;background:var(--border);margin:3px 0"></div><label>Hai già un codice di recupero?<input id="cloudRecoveryCode" class="cloud-input" maxlength="14" placeholder="XXXX-XXXX-XXXX" autocomplete="off"></label><button class="secondary-btn" type="button" onclick="joinCloudArchive()">Recupera i dati dal cloud</button><div id="cloudMessage"></div>`;
+    setCloudStatus('offline','Non configurato');
+  }
+}
+function cloudHeaders(){return{'Content-Type':'application/json',...(cloudState.token?{'Authorization':`Bearer ${cloudState.token}`}:{})}}
+async function cloudApi(path,options={}){const response=await fetch(path,{...options,headers:{...cloudHeaders(),...(options.headers||{})}});let body={};try{body=await response.json()}catch{}if(!response.ok){const error=new Error(body.error||`Errore ${response.status}`);error.status=response.status;error.body=body;throw error}return body}
+function normalizeCloudSnapshot(incoming){
+  if(!incoming||typeof incoming!=='object'||!Array.isArray(incoming.movements)||!incoming.settings)throw new Error('SNAPSHOT_INVALID');
+  return {...structuredClone(defaultData),...incoming,schemaVersion:Number(incoming.schemaVersion)||0,settings:{...defaultData.settings,...(incoming.settings||{})},movements:[...(incoming.movements||[])],recurring:[...(incoming.recurring||[])],recurringSkips:[...(incoming.recurringSkips||[])],categoryMemory:{...(incoming.categoryMemory||{})},goals:[...(incoming.goals||[])],purchasedGoals:[...(incoming.purchasedGoals||[])],monthlyHistory:incoming.monthlyHistory&&typeof incoming.monthlyHistory==='object'?{...incoming.monthlyHistory}:{}};
+}
+function applyCloudSnapshot(snapshot){cloudApplying=true;data=normalizeCloudSnapshot(snapshot);migrateData();data.settings.configured=Number(data.settings.openingBalance)>0;saveDataOnly();cloudApplying=false;renderAll()}
+function markCloudDirty(){if(cloudApplying||!cloudState.token)return;cloudState.dirty=true;persistCloudState();scheduleCloudPush();setCloudStatus(navigator.onLine?'working':'offline',navigator.onLine?'Salvataggio…':'Offline')}
+function scheduleCloudPush(){if(!cloudState.token||cloudApplying)return;clearTimeout(cloudTimer);cloudTimer=setTimeout(()=>pushCloudSnapshot(),900)}
+async function createCloudArchive(){
+  if(!navigator.onLine)return cloudMessage('Serve una connessione Internet.');
+  const name=($('#cloudArchiveName')?.value||'Il mio archivio').trim();setCloudStatus('working','Attivazione…');
+  try{const result=await cloudApi('/api/archives',{method:'POST',body:JSON.stringify({name,snapshot:data})});cloudState={token:result.token,archiveId:result.archiveId,archiveName:result.archiveName,recoveryCode:result.recoveryCode,revision:result.revision,lastSyncAt:Date.now(),dirty:false};persistCloudState();renderCloudSettings();cloudMessage('Backup cloud attivato.',true)}catch(error){setCloudStatus('error','Errore');cloudMessage(error.message)}
+}
+async function joinCloudArchive(){
+  if(!navigator.onLine)return cloudMessage('Serve una connessione Internet.');
+  const recoveryCode=String($('#cloudRecoveryCode')?.value||'').replace(/[^A-Z0-9]/gi,'').toUpperCase();if(recoveryCode.length!==12)return cloudMessage('Inserisci il codice completo di 12 caratteri.');
+  const hasLocalData=data.movements.length||data.recurring.length||data.goals.length;if(hasLocalData&&!confirm('I dati presenti su questo dispositivo verranno sostituiti dalla copia cloud. Continuare?'))return;
+  setCloudStatus('working','Recupero…');
+  try{const result=await cloudApi('/api/archives/join',{method:'POST',body:JSON.stringify({recoveryCode})});cloudState={token:result.token,archiveId:result.archiveId,archiveName:result.archiveName,recoveryCode:result.recoveryCode,revision:result.revision,lastSyncAt:Date.now(),dirty:false};persistCloudState();applyCloudSnapshot(result.snapshot);renderCloudSettings();cloudMessage('Archivio recuperato correttamente.',true)}catch(error){setCloudStatus('error','Errore');cloudMessage(error.message)}
+}
+async function pushCloudSnapshot(retryConflict=true){
+  if(!cloudState.token||!navigator.onLine||cloudApplying||!cloudState.dirty)return;
+  clearTimeout(cloudTimer);setCloudStatus('working','Salvataggio…');const snapshot=JSON.parse(JSON.stringify(data));
+  try{const result=await cloudApi('/api/sync',{method:'PUT',body:JSON.stringify({snapshot,baseRevision:cloudState.revision||0})});cloudState.revision=result.revision;cloudState.lastSyncAt=Date.now();cloudState.dirty=JSON.stringify(snapshot)!==JSON.stringify(data);persistCloudState();setCloudStatus('synced','Protetto');const text=$('#lastCloudSyncText');if(text)text.textContent=new Date(cloudState.lastSyncAt).toLocaleString('it-IT');if(cloudState.dirty)scheduleCloudPush()}
+  catch(error){if(error.message==='CONFLICT'&&retryConflict){try{const latest=await cloudApi('/api/sync');cloudState.revision=latest.revision;persistCloudState();return pushCloudSnapshot(false)}catch{}}setCloudStatus('error',navigator.onLine?'Errore':'Offline')}
+}
+async function pullCloudSnapshot(force=false){
+  if(!cloudState.token||!navigator.onLine)return;if(cloudState.dirty&&!force)return pushCloudSnapshot();
+  try{const result=await cloudApi('/api/sync');if(force||Number(result.revision)>Number(cloudState.revision||0)){applyCloudSnapshot(result.snapshot);cloudState.revision=result.revision}cloudState.lastSyncAt=Date.now();cloudState.dirty=false;persistCloudState();setCloudStatus('synced','Protetto');const text=$('#lastCloudSyncText');if(text)text.textContent=new Date(cloudState.lastSyncAt).toLocaleString('it-IT')}
+  catch(error){if(error.message==='TOKEN_INVALID')disconnectCloud(false);else setCloudStatus('error',navigator.onLine?'Errore':'Offline')}
+}
+async function syncCloudNow(showConfirmation=false){setCloudStatus('working','Sincronizzo…');if(cloudState.dirty)await pushCloudSnapshot();else await pullCloudSnapshot();if(showConfirmation&&cloudState.token)cloudMessage('Sincronizzazione completata.',true)}
+async function rotateCloudRecoveryCode(){
+  if(!navigator.onLine)return cloudMessage('Serve una connessione Internet.');
+  if(!confirm('Generare un nuovo codice? Quello attuale smetterà immediatamente di funzionare.'))return;
+  setCloudStatus('working','Rigenerazione…');
+  try{const result=await cloudApi('/api/recovery-code',{method:'POST'});cloudState.recoveryCode=result.recoveryCode;persistCloudState();renderCloudSettings();cloudMessage('Nuovo codice generato. Il precedente non è più valido.',true)}catch(error){setCloudStatus('error','Errore');cloudMessage(error.message)}
+}
+function disconnectCloud(confirmFirst=true){if(confirmFirst&&!confirm('Disconnettere questo dispositivo? I dati locali e la copia cloud non verranno eliminati.'))return;cloudState={};localStorage.removeItem(CLOUD_SYNC_KEY);clearInterval(cloudPollTimer);renderCloudSettings()}
+function startCloudSync(){renderCloudSettings();if(cloudState.token){syncCloudNow();clearInterval(cloudPollTimer);cloudPollTimer=setInterval(()=>{if(document.visibilityState==='visible')pullCloudSnapshot()},30000)}}
 function populateCategories(type,select){select.innerHTML=CATEGORIES[type].map(([n])=>`<option>${n}</option>`).join('')}
 function normalizeDescription(text){return (text||'').trim().toLowerCase().replace(/\s+/g,' ')}
 function ruleSuggestion(text,type='expense'){if(type!=='expense')return null;const t=normalizeDescription(text);const rules=[['Altro',['amazon','zalando','temu','shein','ebay']],['Supermercato',['esselunga','coop','lidl','aldi','conad','eurospin','supermercato','spesa']],['Carburante',['q8','eni','tamoil','benzina','diesel','carburante']],['Ristoranti e asporto',['mcdonald','ristorante','pizza','pizzeria','kebab','bar']],['Abbonamenti',['netflix','dazn','spotify','icloud','chatgpt']],['Salute',['farmacia','medico','visita','dentista','pediatra']],['Bambini',['pannolini','asilo','latte','bambini']],['Casa',['ikea','leroy merlin','brico']]];for(const [cat,words] of rules)if(words.some(w=>t.includes(w)))return cat;return null}
@@ -786,7 +855,7 @@ window.purchaseGoal=id=>{const allocation=goalAllocations().find(goal=>goal.id==
 function switchMovementTab(name){$$('.movement-tab').forEach(button=>button.classList.toggle('active',button.dataset.movementTab===name));$('#movementPane').classList.toggle('active',name==='list');$('#recurringPane').classList.toggle('active',name==='recurring')}
 function switchView(name){$$('.view').forEach(v=>v.classList.remove('active'));$(`#${name}View`).classList.add('active');$$('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view===name));$('#fab').hidden=!['home','movements'].includes(name);window.scrollTo({top:0,behavior:'smooth'})}
 function applyTheme(){document.documentElement.classList.toggle('dark',data.settings.theme==='dark')}
-$$('[data-view]').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));$$('[data-open-settings]').forEach(b=>b.addEventListener('click',()=>switchView('settings')));$$('[data-movement-tab]').forEach(b=>b.addEventListener('click',()=>switchMovementTab(b.dataset.movementTab)));$$('.priority-option').forEach(b=>b.addEventListener('click',()=>setGoalPriority(b.dataset.priority)));$('#darkThemeToggle').addEventListener('change',e=>{data.settings.theme=e.target.checked?'dark':'light';saveDataOnly();applyTheme()});$$('[data-expense-kind]').forEach(b=>b.addEventListener('click',()=>{const kind=b.dataset.expenseKind;if(kind==='recurring'){if($('#recurringDialog').open)return;const type=$('#movementType').value==='income'?'income':'expense';if($('#movementDialog').open)$('#movementDialog').close();openRecurring(null,type)}else{if($('#movementDialog').open)return;const type=$('#recurringType').value==='income'?'income':'expense';if($('#recurringDialog').open)$('#recurringDialog').close();openMovement(null,type)}}));$('#fab').onclick=()=>$('#actionDialog').showModal();$('#actionExpenseBtn').onclick=()=>{$('#actionDialog').close();openMovement(null,'expense')};$('#actionIncomeBtn').onclick=()=>{$('#actionDialog').close();openMovement(null,'income')};$('#addGoalBtn').onclick=()=>openGoal();$('#addRecurringBtn').onclick=()=>openRecurring(null,'expense');$$('.close-modal').forEach(b=>b.onclick=()=>b.closest('dialog').close());
+$$('[data-view]').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));$$('[data-open-settings]').forEach(b=>b.addEventListener('click',()=>switchView('settings')));$$('[data-movement-tab]').forEach(b=>b.addEventListener('click',()=>switchMovementTab(b.dataset.movementTab)));$$('.priority-option').forEach(b=>b.addEventListener('click',()=>setGoalPriority(b.dataset.priority)));$('#darkThemeToggle').addEventListener('change',e=>{data.settings.theme=e.target.checked?'dark':'light';saveDataOnly();applyTheme();markCloudDirty()});$$('[data-expense-kind]').forEach(b=>b.addEventListener('click',()=>{const kind=b.dataset.expenseKind;if(kind==='recurring'){if($('#recurringDialog').open)return;const type=$('#movementType').value==='income'?'income':'expense';if($('#movementDialog').open)$('#movementDialog').close();openRecurring(null,type)}else{if($('#movementDialog').open)return;const type=$('#recurringType').value==='income'?'income':'expense';if($('#recurringDialog').open)$('#recurringDialog').close();openMovement(null,type)}}));$('#fab').onclick=()=>$('#actionDialog').showModal();$('#actionExpenseBtn').onclick=()=>{$('#actionDialog').close();openMovement(null,'expense')};$('#actionIncomeBtn').onclick=()=>{$('#actionDialog').close();openMovement(null,'income')};$('#addGoalBtn').onclick=()=>openGoal();$$('.close-modal').forEach(b=>b.onclick=()=>b.closest('dialog').close());
 $('#editSingleOccurrenceBtn').onclick=()=>{const movement=data.movements.find(m=>m.id===pendingRecurringMovementId);$('#recurringEditChoiceDialog').close();pendingRecurringMovementId=null;if(movement)openMovement(movement)};
 $('#editWholeRecurringBtn').onclick=()=>{const movement=data.movements.find(m=>m.id===pendingRecurringMovementId),recurring=movement&&data.recurring.find(r=>r.id===movement.recurringId);$('#recurringEditChoiceDialog').close();pendingRecurringMovementId=null;if(recurring)openRecurring(recurring)};
 $('#undoBtn').onclick=()=>{const action=undoAction;clearTimeout(undoTimer);$('#undoToast').hidden=true;undoAction=null;if(action)action()};
@@ -832,6 +901,7 @@ $('#recurringForm').onsubmit=e=>{
   // Crea o aggiorna immediatamente il movimento ricorrente del mese corrente.
   ensureRecurringForMonth(new Date());
   saveDataOnly();
+  markCloudDirty();
   $('#recurringDialog').close();
   renderAll();
   switchView('movements');
@@ -844,7 +914,8 @@ $('#analysisPeriod').onchange=renderAnalysis;$('#searchInput').oninput=renderMov
 $('#exportBtn').onclick=()=>{
   const now=new Date(), stamp=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
   data.settings.lastBackupAt=now.toISOString();saveDataOnly();renderSettings();
-  const backup={app:'Gestione Spese',version:'2.2.1',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
+  markCloudDirty();
+  const backup={app:'Gestione Spese',version:'2.3.0',schemaVersion:DATA_SCHEMA_VERSION,exportedAt:now.toISOString(),data};
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),a=document.createElement('a'),url=URL.createObjectURL(blob);
   a.href=url;a.download=`gestione-spese-backup-${stamp}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
@@ -897,7 +968,8 @@ if (window.visualViewport) {
   window.visualViewport.addEventListener('resize', syncKeyboardLayout);
 }
 
-migrateData();populateCategories('expense',$('#categoryInput'));populateCategories('expense',$('#recurringCategory'));renderAll();if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+window.addEventListener('online',()=>{renderCloudSettings();syncCloudNow()});window.addEventListener('offline',()=>setCloudStatus('offline','Offline'));document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&cloudState.token)pullCloudSnapshot()});
+migrateData();populateCategories('expense',$('#categoryInput'));populateCategories('expense',$('#recurringCategory'));renderAll();startCloudSync();if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 
 
 </script>

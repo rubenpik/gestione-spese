@@ -1,0 +1,15 @@
+{
+  "name": "gestione-spese-cloud",
+  "version": "2.3.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/calculations.test.js && node tests/cloud-sync.test.js",
+    "deploy": "wrangler deploy",
+    "db:local": "wrangler d1 migrations apply DB --local",
+    "db:remote": "wrangler d1 migrations apply DB --remote"
+  },
+  "devDependencies": {
+    "wrangler": "^4.45.0"
+  }
+}

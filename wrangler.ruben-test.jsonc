@@ -1,0 +1,21 @@
+{
+  "name": "gestionespese-ruben-test",
+  "main": "backend/worker.js",
+  "compatibility_date": "2026-08-22",
+  "assets": {
+    "directory": "./app",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "gestione-spese-ruben-test-db",
+      "database_id": "ef7db5ee-9efe-46c7-ac80-125899cc3eec",
+      "migrations_dir": "database/migrations"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}
