@@ -5,6 +5,9 @@ const core=globalThis.AppCore;
 assert.equal(core.effectiveMonthlyResources(2000, 0), 2000, 'Il saldo iniziale copre i giorni prima dello stipendio');
 assert.equal(core.effectiveMonthlyResources(2000, 2400), 2400, 'Un’entrata mensile maggiore aumenta la disponibilità');
 assert.equal(core.effectiveMonthlyResources(2000, 500), 2000, 'Un accredito parziale non riduce la stima iniziale');
+assert.equal(core.effectiveMonthlyResources(2000, 0, 100), 2100, 'Un rimborso si aggiunge sempre alla disponibilità');
+assert.equal(core.effectiveMonthlyResources(2000, 2000, 150), 2150, 'Extra e rimborsi si aggiungono allo stipendio');
+assert.equal(core.effectiveMonthlyResources(2000, 2400, 100), 2500, 'Lo stipendio superiore alla stima e il rimborso aumentano entrambi la disponibilità');
 assert.equal(core.monthlyExtra(2077, 200, 1858.68), 18.32, 'Il risparmio extra mensile è calcolato ai centesimi');
 assert.equal(core.monthlyExtra(2000, 300, 1800), -100, 'Lo sforamento mensile è negativo');
 

@@ -7,8 +7,8 @@
     return Math.round((Number(value) || 0) * 100) / 100;
   }
 
-  function effectiveMonthlyResources(openingBalance, income) {
-    return Math.max(Number(openingBalance) || 0, Number(income) || 0);
+  function effectiveMonthlyResources(openingBalance, salaryIncome, additionalIncome = 0) {
+    return roundMoney(Math.max(Number(openingBalance) || 0, Number(salaryIncome) || 0) + (Number(additionalIncome) || 0));
   }
 
   function monthlyExtra(resources, savingGoal, expense) {

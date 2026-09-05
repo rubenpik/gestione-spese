@@ -506,10 +506,12 @@ function rebuildGoalFundFromHistory(){
       return;
     }
     const item=data.monthlyHistory[event.key],list=data.movements.filter(m=>String(m.date||'').startsWith(event.key));
-    const income=list.filter(m=>m.type==='income').reduce((sum,m)=>sum+Number(m.amount||0),0);
+    const incomeList=list.filter(m=>m.type==='income'),income=incomeList.reduce((sum,m)=>sum+Number(m.amount||0),0);
+    const salaryIncome=incomeList.filter(m=>m.category==='Stipendio').reduce((sum,m)=>sum+Number(m.amount||0),0);
+    const additionalIncome=income-salaryIncome;
     const expense=list.filter(m=>m.type==='expense').reduce((sum,m)=>sum+Number(m.amount||0),0);
     const savingGoal=Number(item.savingGoal)||0,openingBalance=Number(item.openingBalance??item.budget)||0;
-    const resources=income>0?income:openingBalance;
+    const resources=effectiveMonthlyResources(openingBalance,salaryIncome,additionalIncome);
     const extra=resources>0?monthlyExtra(resources,savingGoal,expense):0;
     const applied=extra<0?-Math.min(fund,Math.abs(extra)):extra;
     fund=Math.max(0,fund+applied);
@@ -524,10 +526,12 @@ function closeCompletedMonths(){
   monthKeysBetween(data.goalTrackingStart,currentKey).forEach(key=>{
     if(data.monthlyHistory[key])return;
     const list=data.movements.filter(m=>String(m.date||'').startsWith(key));
-    const income=list.filter(m=>m.type==='income').reduce((sum,m)=>sum+Number(m.amount||0),0);
+    const incomeList=list.filter(m=>m.type==='income'),income=incomeList.reduce((sum,m)=>sum+Number(m.amount||0),0);
+    const salaryIncome=incomeList.filter(m=>m.category==='Stipendio').reduce((sum,m)=>sum+Number(m.amount||0),0);
+    const additionalIncome=income-salaryIncome;
     const expense=list.filter(m=>m.type==='expense').reduce((sum,m)=>sum+Number(m.amount||0),0);
     const openingBalance=Number(data.settings.openingBalance)||0,savingGoal=Number(data.settings.savingGoal)||0;
-    const monthlyResources=income>0?income:openingBalance;
+    const monthlyResources=effectiveMonthlyResources(openingBalance,salaryIncome,additionalIncome);
     const extra=monthlyResources>0?monthlyExtra(monthlyResources,savingGoal,expense):0;
     const before=Math.max(0,Number(data.goalFund)||0);
     const applied=extra<0?-Math.min(before,Math.abs(extra)):extra;
@@ -591,7 +595,7 @@ function daysInMonth(d){return new Date(d.getFullYear(),d.getMonth()+1,0).getDat
 function remainingDays(){const now=new Date();if(ym(now)!==ym(currentMonth)) return daysInMonth(currentMonth);return Math.max(1,daysInMonth(now)-now.getDate()+1)}
 function categoryIcon(name,type='expense'){return (CATEGORIES[type].find(c=>c[0]===name)||['','•'])[1]}
 function pendingRecurringAmount(){return 0}
-function totals(){const ms=monthMovements();return {income:ms.filter(m=>m.type==='income').reduce((s,m)=>s+Number(m.amount),0),expense:ms.filter(m=>m.type==='expense').reduce((s,m)=>s+Number(m.amount),0)}}
+function totals(){const ms=monthMovements(),incomes=ms.filter(m=>m.type==='income'),income=incomes.reduce((s,m)=>s+Number(m.amount),0),salaryIncome=incomes.filter(m=>m.category==='Stipendio').reduce((s,m)=>s+Number(m.amount),0);return {income,salaryIncome,additionalIncome:income-salaryIncome,expense:ms.filter(m=>m.type==='expense').reduce((s,m)=>s+Number(m.amount),0)}}
 
 function groupByCategory(list,type='expense'){
   const totalsMap=new Map();
@@ -639,15 +643,13 @@ function renderHome(){
   }
   if(isPast){
     const income=Number(t.income)||0,expense=Number(t.expense)||0,savingGoal=Number(archived?.savingGoal??goal)||0;
-    // Nei mesi conclusi le entrate realmente registrate hanno sempre la precedenza.
-    // Il saldo iniziale storico viene usato solo quando quel mese non contiene entrate.
     const historicalOpening=Number(archived?.openingBalance??archived?.budget)||0;
-    const resources=income>0?income:historicalOpening;
+    const resources=effectiveMonthlyResources(historicalOpening,t.salaryIncome,t.additionalIncome);
     const spendable=Math.max(0,resources-savingGoal),available=Math.max(0,spendable-expense),rawPct=spendable?expense/spendable*100:(expense>0?100:0),pct=Math.min(100,rawPct);
     $('#realAvailable').textContent=eur(available);$('#totalIncome').textContent=eur(income);$('#totalExpense').textContent=eur(expense);$('#pendingRecurring').textContent=eur(savingGoal);$('#dailySpendLabel').textContent='Disponibilità a fine mese';$('#dailySpend').textContent=eur(available);$('#daysLeft').textContent='Mese concluso';$('#budgetBar').style.width=`${pct}%`;$('#heroBudgetBar').style.width=`${pct}%`;$('#heroBudgetPercent').textContent=`${Math.round(rawPct)}%`;$('#heroBudgetBar').style.background=rawPct>=100?'#fecaca':rawPct>=80?'#fde68a':'#fff';$('#budgetBar').style.background=rawPct>=100?'var(--danger)':rawPct>=80?'var(--warning)':'var(--primary2)';$('#budgetUsed').textContent=`${eur(expense)} usati`;$('#budgetLimit').textContent=rawPct>=100?`Soldi spendibili finiti · limite ${eur(spendable)}`:`${eur(available)} rimasti su ${eur(spendable)}`;renderMovementList('#recentList',monthMovements().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5));return;
   }
   $('#dailySpendLabel').textContent='Oggi puoi ancora spendere';
-  const monthlyResources=effectiveMonthlyResources(openingBalance,t.income),spendable=Math.max(0,monthlyResources-goal),spendableAvailable=Math.max(0,spendable-t.expense),rawPct=spendable?t.expense/spendable*100:(t.expense>0?100:0),pct=Math.min(100,rawPct);
+  const monthlyResources=effectiveMonthlyResources(openingBalance,t.salaryIncome,t.additionalIncome),spendable=Math.max(0,monthlyResources-goal),spendableAvailable=Math.max(0,spendable-t.expense),rawPct=spendable?t.expense/spendable*100:(t.expense>0?100:0),pct=Math.min(100,rawPct);
   $('#realAvailable').textContent=eur(spendableAvailable);$('#totalIncome').textContent=eur(t.income);$('#totalExpense').textContent=eur(t.expense);$('#pendingRecurring').textContent=eur(goal);$('#dailySpend').textContent=eur(spendableAvailable/remainingDays());$('#daysLeft').textContent=`${remainingDays()} giorni rimanenti`;$('#budgetBar').style.width=`${pct}%`;$('#heroBudgetBar').style.width=`${pct}%`;$('#heroBudgetPercent').textContent=`${Math.round(rawPct)}%`;$('#heroBudgetBar').style.background=rawPct>=100?'#fecaca':rawPct>=80?'#fde68a':'#fff';$('#budgetBar').style.background=rawPct>=100?'var(--danger)':rawPct>=80?'var(--warning)':'var(--primary2)';$('#budgetUsed').textContent=`${eur(t.expense)} usati`;$('#budgetLimit').textContent=rawPct>=100?`Soldi spendibili finiti · limite ${eur(spendable)}`:`${eur(spendableAvailable)} rimasti su ${eur(spendable)}`;renderMovementList('#recentList',monthMovements().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5))
 }
 function renderMovementList(sel,list){
