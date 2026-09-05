@@ -4,7 +4,7 @@ PWA personale, ottimizzata per iPhone, per registrare entrate e uscite, controll
 
 ## Versione
 
-**v2.3.0**
+**v2.3.1**
 
 ## Funzioni principali
 
